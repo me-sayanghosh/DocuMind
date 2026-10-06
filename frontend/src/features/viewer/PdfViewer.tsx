@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Spinner } from "../../components/ui/Spinner";
 import { useViewerStore } from "../../hooks/useViewerStore";
 import { useAuthStore } from "../../lib/auth";

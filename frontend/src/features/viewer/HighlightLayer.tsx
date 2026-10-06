@@ -1,4 +1,3 @@
-import React from "react";
 import { BBox } from "../../types/api";
 
 export interface HighlightLayerProps {
@@ -11,8 +10,8 @@ export interface HighlightLayerProps {
 export function HighlightLayer({
   bboxes,
   scale = 1.0,
-  pageWidth = 595,
-  pageHeight = 842,
+  pageWidth: _pageWidth = 595,
+  pageHeight: _pageHeight = 842,
 }: HighlightLayerProps) {
   if (!bboxes || bboxes.length === 0) return null;
 

@@ -1,4 +1,3 @@
-import React from "react";
 import { Button } from "../../components/ui/Button";
 import { Dialog } from "../../components/ui/Dialog";
 import { Document } from "../../types/api";
