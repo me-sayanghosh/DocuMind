@@ -112,7 +112,7 @@ async def get_eval_run_detail(
 @router.get("/{run_id}/export")
 async def export_eval_run(
     run_id: uuid.UUID,
-    format: str = Query("md", regex="^(md|json)$"),
+    format: str = Query("md", pattern="^(md|json)$"),
     ctx: WorkspaceContext = Depends(get_workspace_ctx),
     db: AsyncSession = Depends(get_db),
 ):

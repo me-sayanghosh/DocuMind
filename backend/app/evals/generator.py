@@ -1,6 +1,6 @@
 import random
 import uuid
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -20,7 +20,7 @@ ANSWER: <reference answer>
 
 
 class QuestionGenerator:
-    def __init__(self, llm: LLM | None = None):
+    def __init__(self, llm: Optional[LLM] = None):
         self.llm = llm or get_llm()
 
     async def generate_questions_for_workspace(

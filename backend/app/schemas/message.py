@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 from typing import Any, Dict, List, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class CitationRead(BaseModel):
@@ -27,8 +27,7 @@ class MessageTraceRead(BaseModel):
     top_score: float = 0.0
     cache_hit: bool = False
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class MessageRead(BaseModel):
@@ -44,8 +43,7 @@ class MessageRead(BaseModel):
     trace: Optional[MessageTraceRead] = None
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class SendMessageRequest(BaseModel):

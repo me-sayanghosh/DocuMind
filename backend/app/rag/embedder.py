@@ -1,7 +1,7 @@
 import asyncio
 import hashlib
 import math
-from typing import List, Protocol
+from typing import List, Optional, Protocol
 from app.core.config import settings
 
 
@@ -85,7 +85,7 @@ class SentenceTransformersEmbedder:
         return docs[0]
 
 
-_embedder_instance: Embedder | None = None
+_embedder_instance: Optional[Embedder] = None
 
 
 def get_embedder() -> Embedder:

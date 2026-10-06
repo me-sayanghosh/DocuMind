@@ -1,4 +1,4 @@
-import numpy as np
+import statistics
 from typing import Dict, List
 from fastapi import APIRouter, Depends
 from sqlalchemy import func, select
@@ -15,15 +15,26 @@ from app.schemas.admin import LatencyPercentiles, MetricsResponse, UserUsage
 router = APIRouter(prefix="/admin", tags=["admin"])
 
 
+def _percentile(sorted_values: List[float], pct: float) -> float:
+    """Return the `pct`-th percentile of a pre-sorted list (0–100)."""
+    n = len(sorted_values)
+    if n == 0:
+        return 0.0
+    idx = (pct / 100) * (n - 1)
+    lo, hi = int(idx), min(int(idx) + 1, n - 1)
+    frac = idx - lo
+    return sorted_values[lo] + frac * (sorted_values[hi] - sorted_values[lo])
+
+
 def get_percentiles(values: List[float]) -> LatencyPercentiles:
     if not values:
         return LatencyPercentiles()
-    arr = np.array(values)
+    sv = sorted(values)
     return LatencyPercentiles(
-        p50=round(float(np.percentile(arr, 50)), 1),
-        p90=round(float(np.percentile(arr, 90)), 1),
-        p95=round(float(np.percentile(arr, 95)), 1),
-        p99=round(float(np.percentile(arr, 99)), 1),
+        p50=round(_percentile(sv, 50), 1),
+        p90=round(_percentile(sv, 90), 1),
+        p95=round(_percentile(sv, 95), 1),
+        p99=round(_percentile(sv, 99), 1),
     )
 
 

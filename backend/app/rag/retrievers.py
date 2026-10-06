@@ -5,9 +5,12 @@ from typing import Any, Dict, List, Optional
 from sqlalchemy import text, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.config import settings
 from app.models.chunk import Chunk
 from app.models.document import Document
 from app.rag.embedder import Embedder, get_embedder
+
+_IS_SQLITE = settings.DATABASE_URL.startswith("sqlite")
 
 
 @dataclass
@@ -47,11 +50,9 @@ class VectorRetriever:
         doc_ids: Optional[List[uuid.UUID]] = None,
     ) -> List[Candidate]:
         qvec = await self.embedder.embed_query(query)
-        dialect = db.bind.dialect.name if db.bind else "postgresql"
-
         candidates: List[Candidate] = []
 
-        if dialect == "postgresql":
+        if not _IS_SQLITE:
             doc_filter = ""
             params: Dict[str, Any] = {
                 "ws": str(workspace_id),
@@ -127,10 +128,9 @@ class FTSRetriever:
         k: int = 40,
         doc_ids: Optional[List[uuid.UUID]] = None,
     ) -> List[Candidate]:
-        dialect = db.bind.dialect.name if db.bind else "postgresql"
         candidates: List[Candidate] = []
 
-        if dialect == "postgresql":
+        if not _IS_SQLITE:
             doc_filter = ""
             params: Dict[str, Any] = {
                 "ws": str(workspace_id),

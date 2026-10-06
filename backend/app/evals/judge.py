@@ -1,6 +1,6 @@
 import json
 import re
-from typing import Dict, Tuple
+from typing import Dict, Optional, Tuple
 from app.rag.generator import LLM, get_llm
 
 JUDGE_SYSTEM_PROMPT = """You are an objective evaluation judge for a RAG system.
@@ -16,7 +16,7 @@ Respond ONLY with a JSON object in this format:
 
 
 class EvalJudge:
-    def __init__(self, llm: LLM | None = None):
+    def __init__(self, llm: Optional[LLM] = None):
         self.llm = llm or get_llm()
 
     async def judge_answer(
