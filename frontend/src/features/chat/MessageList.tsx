@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Bot, Loader2 } from "lucide-react";
 import { Message } from "../../types/api";
 import { Markdown } from "./Markdown";
@@ -18,7 +18,7 @@ export function MessageList({
   messages,
   streamingState = "idle",
   streamingDraft = "",
-  streamingSources = [],
+  streamingSources: _streamingSources = [],
   streamingCitations = [],
   onFeedback,
 }: MessageListProps) {

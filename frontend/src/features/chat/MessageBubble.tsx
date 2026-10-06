@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Activity, AlertTriangle, Bot, User } from "lucide-react";
-import { Citation, Message } from "../../types/api";
+import { Message } from "../../types/api";
 import { FeedbackButtons } from "./FeedbackButtons";
 import { Markdown } from "./Markdown";
 import { RetrievalInspector } from "./RetrievalInspector";

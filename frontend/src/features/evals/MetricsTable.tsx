@@ -1,4 +1,3 @@
-import React from "react";
 import { formatPercent } from "../../lib/format";
 
 export interface MetricsTableProps {

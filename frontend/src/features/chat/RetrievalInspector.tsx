@@ -1,4 +1,3 @@
-import React from "react";
 import { Activity, X } from "lucide-react";
 import { MessageTrace } from "../../types/api";
 

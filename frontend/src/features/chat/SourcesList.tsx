@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { ChevronDown, ChevronRight, FileText } from "lucide-react";
 import { useViewerStore } from "../../hooks/useViewerStore";
 import { Citation } from "../../types/api";
