@@ -21,11 +21,11 @@ export function MetricsTable({ summary }: MetricsTableProps) {
   const modes = Object.keys(summary.modes || {});
 
   // Find best values for highlighting
-  const bestHit5 = Math.max(...modes.map((m) => summary.modes[m]["hit@5"] || 0));
-  const bestMrr = Math.max(...modes.map((m) => summary.modes[m].mrr || 0));
-  const bestFaith = Math.max(...modes.map((m) => summary.modes[m].faithfulness || 0));
-  const bestCite = Math.max(...modes.map((m) => summary.modes[m].citation_acc || 0));
-  const bestRefusal = Math.max(...modes.map((m) => summary.modes[m].refusal_correct || 0));
+  const bestHit5 = modes.length > 0 ? Math.max(...modes.map((m) => summary.modes[m]?.["hit@5"] ?? 0)) : 0;
+  const bestMrr = modes.length > 0 ? Math.max(...modes.map((m) => summary.modes[m]?.mrr ?? 0)) : 0;
+  const bestFaith = modes.length > 0 ? Math.max(...modes.map((m) => summary.modes[m]?.faithfulness ?? 0)) : 0;
+  const bestCite = modes.length > 0 ? Math.max(...modes.map((m) => summary.modes[m]?.citation_acc ?? 0)) : 0;
+  const bestRefusal = modes.length > 0 ? Math.max(...modes.map((m) => summary.modes[m]?.refusal_correct ?? 0)) : 0;
 
   return (
     <div className="w-full overflow-x-auto rounded-xl border border-border-light dark:border-border-dark bg-bg-light dark:bg-surface-dark">
@@ -44,6 +44,7 @@ export function MetricsTable({ summary }: MetricsTableProps) {
         <tbody className="divide-y divide-border-light dark:divide-border-dark">
           {modes.map((mode) => {
             const m = summary.modes[mode];
+            if (!m) return null;
             const isHybridRerank = mode === "hybrid_rerank";
             return (
               <tr

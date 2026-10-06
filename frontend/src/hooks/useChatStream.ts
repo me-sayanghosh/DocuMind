@@ -56,6 +56,7 @@ export function useChatStream(conversationId: string | undefined) {
     try {
       const response = await fetch(`/api/v1/conversations/${conversationId}/messages`, {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Authorization: token ? `Bearer ${token}` : "",

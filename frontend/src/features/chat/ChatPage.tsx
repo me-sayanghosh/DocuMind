@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { MessageSquare, Sparkles } from "lucide-react";
 import { EmptyState } from "../../components/ui/EmptyState";
@@ -144,12 +144,11 @@ export function ChatPage() {
               streamingDraft={draft}
               streamingSources={sources}
               streamingCitations={citations}
-              onFeedback={(val) => {
+              onFeedback={async (val) => {
                 const lastAssistant = [...messages].reverse().find((m) => m.role === "assistant");
                 if (lastAssistant) {
-                  return submitFeedback({ messageId: lastAssistant.id, value: val });
+                  await submitFeedback({ messageId: lastAssistant.id, value: val });
                 }
-                return Promise.resolve();
               }}
             />
           )}

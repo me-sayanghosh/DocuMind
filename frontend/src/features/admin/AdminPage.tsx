@@ -1,4 +1,3 @@
-import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Activity, AlertCircle, Users } from "lucide-react";
 import { Spinner } from "../../components/ui/Spinner";

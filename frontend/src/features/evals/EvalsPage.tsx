@@ -69,6 +69,7 @@ export function EvalsPage() {
     if (!wsId || !activeRunId) return;
     try {
       const res = await fetch(`/api/v1/workspaces/${wsId}/evals/${activeRunId}/export?format=md`, {
+        credentials: "include",
         headers: {
           Authorization: `Bearer ${useAuthStore.getState().accessToken}`,
         },

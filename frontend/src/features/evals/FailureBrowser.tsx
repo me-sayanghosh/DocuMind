@@ -12,7 +12,7 @@ export function FailureBrowser({ results }: FailureBrowserProps) {
 
   const filtered = results.filter((r) => {
     if (filterMode !== "all" && r.mode !== filterMode) return false;
-    if (onlyMisses && r.answerable && r.hit_at_k["hit@5"] === 1) return false;
+    if (onlyMisses && r.answerable && r.hit_at_k?.["hit@5"] === 1) return false;
     return true;
   });
 
@@ -50,7 +50,7 @@ export function FailureBrowser({ results }: FailureBrowserProps) {
 
       <div className="space-y-3">
         {filtered.slice(0, 25).map((row, idx) => {
-          const hit5 = row.hit_at_k["hit@5"] === 1;
+          const hit5 = row.hit_at_k?.["hit@5"] === 1;
           return (
             <div
               key={idx}

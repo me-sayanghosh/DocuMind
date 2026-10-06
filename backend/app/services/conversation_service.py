@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.core.errors import NotFoundException
+from app.models.chunk import Chunk
 from app.models.conversation import Conversation
 from app.models.message import Message, MessageCitation
 from app.models.workspace import WorkspaceMember
@@ -86,7 +87,12 @@ class ConversationService:
         stmt = (
             select(Message)
             .where(Message.conversation_id == conversation_id)
-            .options(selectinload(Message.citations), selectinload(Message.trace))
+            .options(
+                selectinload(Message.citations)
+                .selectinload(MessageCitation.chunk)
+                .selectinload(Chunk.document),
+                selectinload(Message.trace),
+            )
             .order_by(Message.created_at.asc())
         )
         res = await db.execute(stmt)

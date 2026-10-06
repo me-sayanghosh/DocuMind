@@ -1,4 +1,3 @@
-import React from "react";
 import { Navigate, createBrowserRouter } from "react-router-dom";
 import { AdminPage } from "../features/admin/AdminPage";
 import { LoginForm } from "../features/auth/LoginForm";

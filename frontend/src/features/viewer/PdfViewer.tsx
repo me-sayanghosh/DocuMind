@@ -23,9 +23,12 @@ export function PdfViewer() {
     }
   }, [targetPage]);
 
+  const currentWorkspace = useAuthStore((s) => s.currentWorkspace);
+
   useEffect(() => {
     let active = true;
-    if (!open || !documentId) {
+    const wsId = currentWorkspace?.id;
+    if (!open || !documentId || !wsId) {
       if (blobUrl) URL.revokeObjectURL(blobUrl);
       setBlobUrl(null);
       return;
@@ -34,7 +37,8 @@ export function PdfViewer() {
     const loadPdf = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/v1/workspaces/${useAuthStore.getState().currentWorkspace?.id}/documents/${documentId}/file`, {
+        const res = await fetch(`/api/v1/workspaces/${wsId}/documents/${documentId}/file`, {
+          credentials: "include",
           headers: {
             Authorization: token ? `Bearer ${token}` : "",
           },
@@ -57,7 +61,7 @@ export function PdfViewer() {
     return () => {
       active = false;
     };
-  }, [open, documentId]);
+  }, [open, documentId, currentWorkspace?.id, token]);
 
   if (!open) return null;
 

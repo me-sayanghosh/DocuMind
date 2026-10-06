@@ -38,5 +38,7 @@ export function StatusBadge({ status, chunksDone = 0, chunksTotal = 0 }: StatusB
           Failed
         </Badge>
       );
+    default:
+      return null;
   }
 }

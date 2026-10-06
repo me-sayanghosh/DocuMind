@@ -1,11 +1,13 @@
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 
 def calculate_hit_at_k(
     gold_chunk_ids: List[str],
     retrieved_chunk_ids: List[str],
-    k_values: List[int] = [1, 3, 5, 10],
+    k_values: Optional[List[int]] = None,
 ) -> Dict[str, float]:
+    if k_values is None:
+        k_values = [1, 3, 5, 10]
     gold_set = set(gold_chunk_ids)
     results = {}
 

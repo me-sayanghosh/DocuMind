@@ -1,4 +1,4 @@
-.PHONY: up down api worker web test test-backend test-frontend eval migrate lint format clean help
+.PHONY: up down api worker web test test-backend test-frontend eval migrate lint format clean quality help
 
 help:
 	@echo "Available commands:"
@@ -7,6 +7,7 @@ help:
 	@echo "  make api           - Start FastAPI backend with reload"
 	@echo "  make worker        - Start ARQ background worker"
 	@echo "  make web           - Start Vite frontend dev server"
+	@echo "  make quality       - Run multi-check code quality test suite"
 	@echo "  make test          - Run all backend and frontend tests"
 	@echo "  make test-backend  - Run backend pytest tests"
 	@echo "  make test-frontend - Run frontend tests"
@@ -33,11 +34,18 @@ web:
 migrate:
 	cd backend && alembic upgrade head
 
+quality:
+	@if [ -f backend/.venv/bin/python ]; then \
+		backend/.venv/bin/python scripts/quality_checks.py; \
+	else \
+		python3 scripts/quality_checks.py; \
+	fi
+
 test-backend:
-	cd backend && pytest -v
+	cd backend && if [ -f .venv/bin/pytest ]; then .venv/bin/pytest -v; else pytest -v; fi
 
 test-frontend:
-	cd frontend && npm test
+	cd frontend && npx tsc --noEmit && npm run build
 
 test: test-backend test-frontend
 

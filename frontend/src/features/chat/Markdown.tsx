@@ -18,7 +18,7 @@ export function Markdown({ content, citations = [] }: MarkdownProps) {
     <div className="prose dark:prose-invert max-w-none text-sm leading-relaxed break-words">
       {parts.map((part, index) => {
         const match = part.match(/^\[(\d+)\]$/);
-        if (match) {
+        if (match && match[1]) {
           const num = parseInt(match[1], 10);
           const citation = citationMap.get(num);
           return <CitationChip key={index} n={num} citation={citation} />;

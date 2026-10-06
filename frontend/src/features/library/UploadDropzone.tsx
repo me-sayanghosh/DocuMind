@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { AlertCircle, CheckCircle, FileUp, Upload } from "lucide-react";
+import { AlertCircle, CheckCircle, Upload } from "lucide-react";
 import { Progress } from "../../components/ui/Progress";
 import { useAuthStore } from "../../lib/auth";
 
@@ -42,6 +42,7 @@ export function UploadDropzone({ onSuccess }: UploadDropzoneProps) {
       setProgress(50);
       const res = await fetch(`/api/v1/workspaces/${wsId}/documents`, {
         method: "POST",
+        credentials: "include",
         headers: {
           Authorization: token ? `Bearer ${token}` : "",
         },
@@ -89,8 +90,9 @@ export function UploadDropzone({ onSuccess }: UploadDropzoneProps) {
   const onDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFile(e.dataTransfer.files[0]);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      handleFile(file);
     }
   };
 
@@ -113,8 +115,9 @@ export function UploadDropzone({ onSuccess }: UploadDropzoneProps) {
           accept="application/pdf"
           className="hidden"
           onChange={(e) => {
-            if (e.target.files && e.target.files[0]) {
-              handleFile(e.target.files[0]);
+            const file = e.target.files?.[0];
+            if (file) {
+              handleFile(file);
             }
           }}
         />

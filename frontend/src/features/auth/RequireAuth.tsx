@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { Spinner } from "../../components/ui/Spinner";
 import { apiClient } from "../../lib/apiClient";
@@ -18,6 +18,7 @@ export function RequireAuth() {
           // Attempt silent refresh
           const refreshRes = await fetch("/api/v1/auth/refresh", {
             method: "POST",
+            credentials: "include",
             headers: { "X-Requested-With": "XMLHttpRequest" },
           });
 
@@ -45,7 +46,7 @@ export function RequireAuth() {
     return () => {
       mounted = false;
     };
-  }, [accessToken]);
+  }, [accessToken, setAuth, logout]);
 
   if (checking) {
     return (

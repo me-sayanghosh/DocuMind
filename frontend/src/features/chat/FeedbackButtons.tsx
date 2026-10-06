@@ -1,14 +1,14 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
 
 export interface FeedbackButtonsProps {
-  messageId: string;
+  messageId?: string;
   initialFeedback?: number | null;
   onFeedback: (val: number) => Promise<any>;
 }
 
 export function FeedbackButtons({
-  messageId,
+  messageId: _messageId,
   initialFeedback = null,
   onFeedback,
 }: FeedbackButtonsProps) {

@@ -1,13 +1,12 @@
-import React from "react";
+import { type ReactNode } from "react";
 import { X } from "lucide-react";
-import { cn } from "../../lib/cn";
 
 export interface DialogProps {
   open: boolean;
   onClose: () => void;
   title: string;
   description?: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export function Dialog({ open, onClose, title, description, children }: DialogProps) {
