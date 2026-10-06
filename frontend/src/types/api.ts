@@ -14,6 +14,24 @@ export interface Workspace {
   created_at: string;
 }
 
+export interface TokenResponse {
+  access_token: string;
+  token_type: string;
+  expires_in: number;
+  user: User;
+}
+
+export interface TokenRefreshResponse {
+  access_token: string;
+  token_type: string;
+  expires_in: number;
+}
+
+export interface MeResponse {
+  user: User;
+  workspaces: Workspace[];
+}
+
 export interface Document {
   id: string;
   filename: string;
