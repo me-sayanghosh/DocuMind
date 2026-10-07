@@ -13,11 +13,12 @@ export function useDocuments() {
     queryFn: () => (wsId ? apiClient<Document[]>(`/workspaces/${wsId}/documents`) : Promise.resolve([])),
     enabled: !!wsId,
     refetchInterval: (query) => {
-      // Poll every 3 seconds if any document is in non-terminal state
+      // Poll every 2 seconds if any document is in non-terminal state (queued or processing)
       const docs = query.state.data;
-      const hasPending = docs?.some((d) => d.status === "queued" || d.status === "processing");
-      return hasPending ? 3000 : false;
+      const hasPending = Array.isArray(docs) && docs.some((d) => d.status === "queued" || d.status === "processing");
+      return hasPending ? 2000 : false;
     },
+    refetchIntervalInBackground: true,
   });
 
   const deleteMutation = useMutation({
