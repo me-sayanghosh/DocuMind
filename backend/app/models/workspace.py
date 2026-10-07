@@ -29,6 +29,7 @@ class Workspace(Base):
 
     owner = relationship("User", back_populates="workspaces_owned")
     members = relationship("WorkspaceMember", back_populates="workspace", cascade="all, delete-orphan")
+    invitations = relationship("WorkspaceInvitation", back_populates="workspace", cascade="all, delete-orphan")
     documents = relationship("Document", back_populates="workspace", cascade="all, delete-orphan")
     conversations = relationship("Conversation", back_populates="workspace", cascade="all, delete-orphan")
 
@@ -54,3 +55,27 @@ class WorkspaceMember(Base):
 
     workspace = relationship("Workspace", back_populates="members")
     user = relationship("User", back_populates="memberships")
+
+
+class WorkspaceInvitation(Base):
+    __tablename__ = "workspace_invitations"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4,
+    )
+    workspace_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("workspaces.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    email: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
+    role: Mapped[str] = mapped_column(String(50), default="member", nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    workspace = relationship("Workspace", back_populates="invitations")

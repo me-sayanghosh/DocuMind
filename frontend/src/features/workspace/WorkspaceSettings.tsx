@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Mail } from "lucide-react";
 import { Button } from "../../components/ui/Button";
 import { Dialog } from "../../components/ui/Dialog";
 import { Input } from "../../components/ui/Input";
@@ -45,11 +46,14 @@ export function WorkspaceSettings() {
     if (!inviteEmail.trim()) return;
 
     try {
-      await apiClient(`/workspaces/${currentWorkspace.id}/invites`, {
-        method: "POST",
-        body: JSON.stringify({ email: inviteEmail.trim(), role: "member" }),
-      });
-      setInviteSuccess(`Successfully invited ${inviteEmail}`);
+      const res = await apiClient<{ status: string; message?: string }>(
+        `/workspaces/${currentWorkspace.id}/invites`,
+        {
+          method: "POST",
+          body: JSON.stringify({ email: inviteEmail.trim(), role: "member" }),
+        }
+      );
+      setInviteSuccess(res.message || `Successfully invited ${inviteEmail.trim()}. An invitation email has been sent!`);
       setInviteEmail("");
     } catch (err: any) {
       alert(err.detail || "Failed to invite member");
@@ -113,8 +117,9 @@ export function WorkspaceSettings() {
             </p>
 
             {inviteSuccess && (
-              <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 text-sm rounded-lg border border-emerald-200 dark:border-emerald-800">
-                {inviteSuccess}
+              <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 text-sm rounded-lg border border-emerald-200 dark:border-emerald-800 flex items-start gap-2.5">
+                <Mail className="w-4 h-4 mt-0.5 shrink-0" />
+                <span className="flex-1 leading-relaxed">{inviteSuccess}</span>
               </div>
             )}
 

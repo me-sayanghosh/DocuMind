@@ -13,7 +13,7 @@ from app.core.security import (
     verify_password,
 )
 from app.models.user import RefreshToken, User
-from app.models.workspace import Workspace, WorkspaceMember
+from app.models.workspace import Workspace, WorkspaceInvitation, WorkspaceMember
 
 
 class AuthService:
@@ -50,6 +50,19 @@ class AuthService:
             role="owner",
         )
         db.add(member)
+
+        # Fulfill any pending workspace invitations for this email
+        inv_stmt = select(WorkspaceInvitation).where(WorkspaceInvitation.email == clean_email)
+        inv_res = await db.execute(inv_stmt)
+        for inv in inv_res.scalars().all():
+            invited_member = WorkspaceMember(
+                workspace_id=inv.workspace_id,
+                user_id=user.id,
+                role=inv.role,
+            )
+            db.add(invited_member)
+            await db.delete(inv)
+
         await db.commit()
         await db.refresh(user)
 

@@ -1,12 +1,12 @@
 import uuid
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.errors import ConflictException, NotFoundException
 from app.models.document import Document
 from app.models.user import User
-from app.models.workspace import Workspace, WorkspaceMember
+from app.models.workspace import Workspace, WorkspaceInvitation, WorkspaceMember
 from app.services.storage_service import storage_service
 
 
@@ -72,26 +72,47 @@ class WorkspaceService:
 
     async def invite_member(
         self, db: AsyncSession, workspace_id: uuid.UUID, email: str, role: str
-    ) -> WorkspaceMember:
-        user_stmt = select(User).where(User.email == email.strip().lower())
+    ) -> Tuple[Optional[WorkspaceMember], Optional[WorkspaceInvitation], bool]:
+        clean_email = email.strip().lower()
+        user_stmt = select(User).where(User.email == clean_email)
         user_res = await db.execute(user_stmt)
         target_user = user_res.scalar_one_or_none()
-        if not target_user:
-            raise NotFoundException(f"No user found with email {email}")
 
-        existing = await db.get(WorkspaceMember, (workspace_id, target_user.id))
-        if existing:
-            raise ConflictException("User is already a member of this workspace")
+        if target_user:
+            existing = await db.get(WorkspaceMember, (workspace_id, target_user.id))
+            if existing:
+                raise ConflictException("User is already a member of this workspace")
 
-        member = WorkspaceMember(
-            workspace_id=workspace_id,
-            user_id=target_user.id,
-            role=role,
-        )
-        db.add(member)
-        await db.commit()
-        await db.refresh(member)
-        return member
+            member = WorkspaceMember(
+                workspace_id=workspace_id,
+                user_id=target_user.id,
+                role=role,
+            )
+            db.add(member)
+            await db.commit()
+            await db.refresh(member)
+            return member, None, True
+        else:
+            # User is not registered yet: create or update a pending workspace invitation
+            inv_stmt = select(WorkspaceInvitation).where(
+                WorkspaceInvitation.workspace_id == workspace_id,
+                WorkspaceInvitation.email == clean_email,
+            )
+            inv_res = await db.execute(inv_stmt)
+            invitation = inv_res.scalar_one_or_none()
+            if not invitation:
+                invitation = WorkspaceInvitation(
+                    workspace_id=workspace_id,
+                    email=clean_email,
+                    role=role,
+                )
+                db.add(invitation)
+            else:
+                invitation.role = role
+
+            await db.commit()
+            await db.refresh(invitation)
+            return None, invitation, False
 
 
 workspace_service = WorkspaceService()

@@ -1,11 +1,12 @@
 from typing import List
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, BackgroundTasks, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.deps import WorkspaceContext, get_current_user, require_workspace_owner
 from app.db.session import get_db
 from app.models.user import User
 from app.schemas.workspace import WorkspaceCreate, WorkspaceInvite, WorkspaceRead, WorkspaceUpdate
+from app.services.email_service import email_service
 from app.services.workspace_service import workspace_service
 
 router = APIRouter(prefix="/workspaces", tags=["workspaces"])
@@ -72,10 +73,29 @@ async def delete_workspace(
 @router.post("/{workspace_id}/invites", status_code=status.HTTP_200_OK)
 async def invite_member(
     data: WorkspaceInvite,
+    background_tasks: BackgroundTasks,
     ctx: WorkspaceContext = Depends(require_workspace_owner),
     db: AsyncSession = Depends(get_db),
 ):
-    member = await workspace_service.invite_member(
+    member, invitation, is_registered = await workspace_service.invite_member(
         db, workspace_id=ctx.workspace.id, email=data.email, role=data.role
     )
-    return {"status": "success", "user_id": str(member.user_id), "role": member.role}
+
+    # Dispatch email notification in background
+    background_tasks.add_task(
+        email_service.send_workspace_invitation,
+        to_email=data.email.strip().lower(),
+        workspace_name=ctx.workspace.name,
+        inviter_email=ctx.user.email,
+        role=data.role,
+        is_registered=is_registered,
+    )
+
+    return {
+        "status": "success",
+        "user_id": str(member.user_id) if member else None,
+        "role": data.role,
+        "is_registered": is_registered,
+        "email_sent": True,
+        "message": f"Successfully invited {data.email}. An invitation email has been sent.",
+    }

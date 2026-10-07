@@ -74,5 +74,18 @@ class Settings(BaseSettings):
     CHAT_RATE_LIMIT_PER_MINUTE: int = 10
     DAILY_QUESTION_QUOTA: int = 100
 
+    # Email & Notifications
+    EMAILS_ENABLED: bool = True
+    SMTP_HOST: str = ""
+    SMTP_PORT: int = 587
+    SMTP_USER: str = ""
+    SMTP_PASSWORD: str = ""
+    SMTP_USE_TLS: bool = True
+    SMTP_USE_SSL: bool = False
+    SMTP_FROM_EMAIL: str = "notifications@documind.app"
+    SMTP_FROM_NAME: str = "DocuMind"
+    RESEND_API_KEY: str = ""
+    FRONTEND_URL: str = "http://localhost:5173"
+
 
 settings = Settings()

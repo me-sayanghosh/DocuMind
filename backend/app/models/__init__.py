@@ -1,6 +1,6 @@
 from app.db.base import Base
 from app.models.user import User, RefreshToken
-from app.models.workspace import Workspace, WorkspaceMember
+from app.models.workspace import Workspace, WorkspaceMember, WorkspaceInvitation
 from app.models.document import Document
 from app.models.chunk import Chunk
 from app.models.conversation import Conversation
@@ -15,6 +15,7 @@ __all__ = [
     "RefreshToken",
     "Workspace",
     "WorkspaceMember",
+    "WorkspaceInvitation",
     "Document",
     "Chunk",
     "Conversation",
