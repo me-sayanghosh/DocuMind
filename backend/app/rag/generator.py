@@ -61,6 +61,59 @@ class AnthropicLLM:
         return "".join(b.text for b in content_blocks if hasattr(b, "text"))
 
 
+class GeminiLLM:
+    """LLM backend using the Google Gemini API via the google-genai SDK."""
+
+    def __init__(self, api_key: str, default_model: str):
+        from google import genai
+        self.client = genai.Client(api_key=api_key)
+        self.default_model = default_model
+
+    async def stream(
+        self,
+        system: str,
+        messages: List[Dict[str, str]],
+        model: Optional[str] = None,
+    ) -> AsyncIterator[str]:
+        from google.genai import types
+
+        target_model = model or self.default_model
+        # Combine all message contents into a single prompt for Gemini
+        contents = "\n".join(m["content"] for m in messages)
+
+        async for chunk in await self.client.aio.models.generate_content_stream(
+            model=target_model,
+            contents=contents,
+            config=types.GenerateContentConfig(
+                system_instruction=system,
+                max_output_tokens=2048,
+            ),
+        ):
+            if chunk.text:
+                yield chunk.text
+
+    async def complete(
+        self,
+        system: str,
+        messages: List[Dict[str, str]],
+        model: Optional[str] = None,
+    ) -> str:
+        from google.genai import types
+
+        target_model = model or self.default_model
+        contents = "\n".join(m["content"] for m in messages)
+
+        response = await self.client.aio.models.generate_content(
+            model=target_model,
+            contents=contents,
+            config=types.GenerateContentConfig(
+                system_instruction=system,
+                max_output_tokens=2048,
+            ),
+        )
+        return response.text or ""
+
+
 class FakeLLM:
     """
     Deterministic mock LLM for testing, local offline usage, and CI.
@@ -116,6 +169,14 @@ def get_llm() -> LLM:
         try:
             return AnthropicLLM(
                 api_key=settings.ANTHROPIC_API_KEY,
+                default_model=settings.LLM_MODEL,
+            )
+        except Exception:
+            return FakeLLM()
+    elif settings.LLM_PROVIDER == "gemini" and settings.GEMINI_API_KEY:
+        try:
+            return GeminiLLM(
+                api_key=settings.GEMINI_API_KEY,
                 default_model=settings.LLM_MODEL,
             )
         except Exception:

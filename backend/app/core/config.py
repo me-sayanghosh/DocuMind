@@ -22,7 +22,8 @@ class Settings(BaseSettings):
 
     # LLM Settings
     ANTHROPIC_API_KEY: str = ""
-    LLM_PROVIDER: str = "fake"  # 'anthropic' or 'fake'
+    GEMINI_API_KEY: str = ""
+    LLM_PROVIDER: str = "fake"  # 'anthropic', 'gemini', or 'fake'
     LLM_MODEL: str = "claude-3-5-sonnet-20241022"
     LLM_FAST_MODEL: str = "claude-3-5-haiku-20241022"
 
