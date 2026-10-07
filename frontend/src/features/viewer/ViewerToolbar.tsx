@@ -21,22 +21,23 @@ export function ViewerToolbar({
   onClose,
 }: ViewerToolbarProps) {
   return (
-    <div className="flex items-center justify-between px-4 py-2 border-b border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark text-text-light dark:text-text-dark">
-      <div className="truncate max-w-[200px] lg:max-w-xs font-medium text-sm">
+    <div className="flex items-center justify-between px-3 sm:px-4 py-2 border-b border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark text-text-light dark:text-text-dark gap-2">
+      <div className="truncate max-w-[120px] sm:max-w-[200px] lg:max-w-xs font-medium text-xs sm:text-sm">
         {filename}
       </div>
 
-      <div className="flex items-center gap-2">
-        <div className="flex items-center gap-1 text-xs">
+      <div className="flex items-center gap-1.5 sm:gap-2">
+        <div className="flex items-center gap-0.5 sm:gap-1 text-xs">
           <Button
             variant="ghost"
             size="sm"
             disabled={currentPage <= 1}
             onClick={() => onPageChange(currentPage - 1)}
+            className="p-1 sm:p-2 h-7 w-7 sm:h-8 sm:w-8"
           >
             <ChevronLeft className="w-4 h-4" />
           </Button>
-          <span>
+          <span className="text-[11px] sm:text-xs px-1 whitespace-nowrap">
             {currentPage} / {totalPages || 1}
           </span>
           <Button
@@ -44,14 +45,15 @@ export function ViewerToolbar({
             size="sm"
             disabled={currentPage >= totalPages}
             onClick={() => onPageChange(currentPage + 1)}
+            className="p-1 sm:p-2 h-7 w-7 sm:h-8 sm:w-8"
           >
             <ChevronRight className="w-4 h-4" />
           </Button>
         </div>
 
-        <div className="h-4 w-px bg-border-light dark:bg-border-dark mx-1" />
+        <div className="hidden sm:block h-4 w-px bg-border-light dark:border-border-dark mx-1" />
 
-        <div className="flex items-center gap-1">
+        <div className="hidden sm:flex items-center gap-1">
           <Button
             variant="ghost"
             size="sm"
@@ -70,7 +72,7 @@ export function ViewerToolbar({
         </div>
       </div>
 
-      <Button variant="ghost" size="sm" onClick={onClose}>
+      <Button variant="ghost" size="sm" onClick={onClose} className="p-1.5 h-8 w-8">
         <X className="w-4 h-4" />
       </Button>
     </div>

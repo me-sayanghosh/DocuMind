@@ -8,10 +8,10 @@ export function LibraryPage() {
 
   return (
     <div className="flex-1 h-full overflow-y-auto w-full">
-      <div className="max-w-6xl mx-auto p-6 space-y-8">
+      <div className="max-w-6xl mx-auto p-4 sm:p-6 space-y-6 sm:space-y-8">
         <div>
-          <h1 className="text-2xl font-bold text-text-light dark:text-text-dark">Document Library</h1>
-          <p className="mt-1 text-sm text-muted-light dark:text-muted-dark">
+          <h1 className="text-xl sm:text-2xl font-bold text-text-light dark:text-text-dark">Document Library</h1>
+          <p className="mt-1 text-xs sm:text-sm text-muted-light dark:text-muted-dark">
             Upload and manage PDF documents for hybrid search retrieval and verifiable chat citations.
           </p>
         </div>

@@ -103,7 +103,7 @@ export function UploadDropzone({ onSuccess }: UploadDropzoneProps) {
         onDragLeave={onDragLeave}
         onDrop={onDrop}
         onClick={() => fileInputRef.current?.click()}
-        className={`w-full p-8 border-2 border-dashed rounded-xl text-center cursor-pointer transition-colors ${
+        className={`w-full p-5 sm:p-8 border-2 border-dashed rounded-xl text-center cursor-pointer transition-colors ${
           isDragging
             ? "border-black dark:border-white bg-black/5 dark:bg-white/5"
             : "border-border-light dark:border-border-dark hover:border-black/50 dark:hover:border-white/50 bg-surface-light dark:bg-surface-dark"

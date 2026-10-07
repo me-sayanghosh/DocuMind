@@ -99,18 +99,18 @@ export function EvalsPage() {
 
   return (
     <div className="flex-1 h-full overflow-y-auto w-full">
-      <div className="max-w-6xl mx-auto p-6 space-y-8">
-      <div className="flex items-center justify-between">
+      <div className="max-w-6xl mx-auto p-4 sm:p-6 space-y-6 sm:space-y-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-text-light dark:text-text-dark">
+          <h1 className="text-xl sm:text-2xl font-bold text-text-light dark:text-text-dark">
             Evaluation Harness
           </h1>
-          <p className="mt-1 text-sm text-muted-light dark:text-muted-dark">
+          <p className="mt-1 text-xs sm:text-sm text-muted-light dark:text-muted-dark">
             Measure retrieval quality and answer faithfulness across vector, FTS, hybrid, and rerank strategies.
           </p>
         </div>
 
-        <Button onClick={() => setTriggerModalOpen(true)} className="gap-2">
+        <Button onClick={() => setTriggerModalOpen(true)} className="gap-2 self-start sm:self-auto shrink-0">
           <Play className="w-4 h-4" />
           <span>New Evaluation</span>
         </Button>

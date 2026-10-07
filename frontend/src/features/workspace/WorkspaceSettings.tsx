@@ -77,57 +77,60 @@ export function WorkspaceSettings() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 space-y-8">
-      <div>
-        <h2 className="text-xl font-bold text-text-light dark:text-text-dark">Workspace Settings</h2>
-        <p className="mt-1 text-sm text-muted-light dark:text-muted-dark">
-          Manage your workspace preferences, members, and isolation boundary.
-        </p>
-      </div>
-
-      {/* General Settings */}
-      <div className="p-6 rounded-xl border border-border-light dark:border-border-dark bg-bg-light dark:bg-surface-dark space-y-4">
-        <h3 className="text-base font-semibold text-text-light dark:text-text-dark">General</h3>
-        <form onSubmit={handleRename} className="space-y-4">
-          <Input
-            label="Workspace Name"
-            value={name}
-            disabled={!isOwner}
-            onChange={(e) => setName(e.target.value)}
-          />
-          {isOwner && (
-            <Button type="submit" isLoading={isUpdating}>
-              Save changes
-            </Button>
-          )}
-        </form>
-      </div>
-
-      {/* Invites */}
-      {isOwner && (
-        <div className="p-6 rounded-xl border border-border-light dark:border-border-dark bg-bg-light dark:bg-surface-dark space-y-4">
-          <h3 className="text-base font-semibold text-text-light dark:text-text-dark">Invite Members</h3>
-          <p className="text-sm text-muted-light dark:text-muted-dark">
-            Invite colleagues to collaborate and chat with documents in this workspace.
+    <div className="flex-1 h-full overflow-y-auto w-full">
+      <div className="max-w-2xl mx-auto p-4 sm:p-6 space-y-6 sm:space-y-8">
+        <div>
+          <h2 className="text-xl font-bold text-text-light dark:text-text-dark">Workspace Settings</h2>
+          <p className="mt-1 text-xs sm:text-sm text-muted-light dark:text-muted-dark">
+            Manage your workspace preferences, members, and isolation boundary.
           </p>
+        </div>
 
-          {inviteSuccess && (
-            <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 text-sm rounded-lg border border-emerald-200 dark:border-emerald-800">
-              {inviteSuccess}
-            </div>
-          )}
-
-          <form onSubmit={handleInvite} className="flex gap-3">
+        {/* General Settings */}
+        <div className="p-4 sm:p-6 rounded-xl border border-border-light dark:border-border-dark bg-bg-light dark:bg-surface-dark space-y-4">
+          <h3 className="text-base font-semibold text-text-light dark:text-text-dark">General</h3>
+          <form onSubmit={handleRename} className="space-y-4">
             <Input
-              type="email"
-              placeholder="colleague@example.com"
-              value={inviteEmail}
-              onChange={(e) => setInviteEmail(e.target.value)}
+              label="Workspace Name"
+              value={name}
+              disabled={!isOwner}
+              onChange={(e) => setName(e.target.value)}
             />
-            <Button type="submit">Invite</Button>
+            {isOwner && (
+              <Button type="submit" isLoading={isUpdating}>
+                Save changes
+              </Button>
+            )}
           </form>
         </div>
-      )}
+
+        {/* Invites */}
+        {isOwner && (
+          <div className="p-4 sm:p-6 rounded-xl border border-border-light dark:border-border-dark bg-bg-light dark:bg-surface-dark space-y-4">
+            <h3 className="text-base font-semibold text-text-light dark:text-text-dark">Invite Members</h3>
+            <p className="text-xs sm:text-sm text-muted-light dark:text-muted-dark">
+              Invite colleagues to collaborate and chat with documents in this workspace.
+            </p>
+
+            {inviteSuccess && (
+              <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 text-sm rounded-lg border border-emerald-200 dark:border-emerald-800">
+                {inviteSuccess}
+              </div>
+            )}
+
+            <form onSubmit={handleInvite} className="flex flex-col sm:flex-row gap-3">
+              <div className="flex-1">
+                <Input
+                  type="email"
+                  placeholder="colleague@example.com"
+                  value={inviteEmail}
+                  onChange={(e) => setInviteEmail(e.target.value)}
+                />
+              </div>
+              <Button type="submit" className="shrink-0">Invite</Button>
+            </form>
+          </div>
+        )}
 
       {/* Danger Zone */}
       {isOwner && (
@@ -168,6 +171,7 @@ export function WorkspaceSettings() {
           </div>
         </div>
       </Dialog>
+      </div>
     </div>
   );
 }

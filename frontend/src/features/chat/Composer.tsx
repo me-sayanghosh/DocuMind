@@ -76,7 +76,7 @@ export function Composer({
   };
 
   return (
-    <div className="p-4 border-t border-border-light dark:border-border-dark bg-bg-light dark:bg-surface-dark">
+    <div className="p-2.5 sm:p-4 border-t border-border-light dark:border-border-dark bg-bg-light dark:bg-surface-dark shrink-0">
       <div className="relative flex items-end gap-2 bg-surface-light dark:bg-border-dark/30 rounded-xl border border-border-light dark:border-border-dark p-2 focus-within:ring-2 focus-within:ring-black dark:focus-within:ring-white focus-within:border-transparent transition-all">
         <textarea
           ref={textareaRef}

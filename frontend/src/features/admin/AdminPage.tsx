@@ -24,15 +24,16 @@ export function AdminPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-6 space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-text-light dark:text-text-dark">
-          System Administration & Telemetry
-        </h1>
-        <p className="mt-1 text-sm text-muted-light dark:text-muted-dark">
-          Pipeline stage latency percentiles, error rates, and user usage quotas.
-        </p>
-      </div>
+    <div className="flex-1 h-full overflow-y-auto w-full">
+      <div className="max-w-6xl mx-auto p-4 sm:p-6 space-y-6 sm:space-y-8">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold text-text-light dark:text-text-dark">
+            System Administration & Telemetry
+          </h1>
+          <p className="mt-1 text-xs sm:text-sm text-muted-light dark:text-muted-dark">
+            Pipeline stage latency percentiles, error rates, and user usage quotas.
+          </p>
+        </div>
 
       {/* Top Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -133,6 +134,7 @@ export function AdminPage() {
           </table>
         </div>
       </div>
+    </div>
     </div>
   );
 }
