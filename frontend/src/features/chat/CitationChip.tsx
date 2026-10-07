@@ -30,7 +30,7 @@ export function CitationChip({ n, citation }: CitationChipProps) {
         onClick={handleClick}
         onMouseEnter={() => setShowTooltip(true)}
         onMouseLeave={() => setShowTooltip(false)}
-        className="inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-semibold rounded bg-primary/10 text-primary hover:bg-primary hover:text-white border border-primary/20 transition-all cursor-pointer shadow-2xs"
+        className="inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-semibold rounded bg-black/5 text-black hover:bg-black hover:text-white dark:bg-white/10 dark:text-white dark:hover:bg-white dark:hover:text-black border border-black/15 dark:border-white/20 transition-all cursor-pointer shadow-2xs"
         aria-label={`Citation ${n}`}
       >
         [{n}]

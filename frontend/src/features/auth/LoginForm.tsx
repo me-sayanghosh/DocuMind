@@ -44,7 +44,7 @@ export function LoginForm() {
       <div className="text-center mb-8">
         <h1 className="text-2xl font-bold text-text-light dark:text-text-dark">Welcome back</h1>
         <p className="mt-2 text-sm text-muted-light dark:text-muted-dark">
-          Sign in to your DocChat account to continue
+          Sign in to your Documind account to continue
         </p>
       </div>
 

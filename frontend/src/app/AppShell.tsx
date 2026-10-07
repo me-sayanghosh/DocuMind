@@ -58,7 +58,7 @@ export function AppShell() {
             </div>
             <div>
               <span className="font-bold text-base tracking-tight text-text-light dark:text-text-dark">
-                DocChat
+                Documind
               </span>
               <span className="text-[10px] block text-muted-light dark:text-muted-dark font-medium uppercase tracking-wider">
                 Verifiable RAG

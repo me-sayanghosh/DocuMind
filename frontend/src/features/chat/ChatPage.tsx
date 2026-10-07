@@ -126,8 +126,8 @@ export function ChatPage() {
               onChange={setSelectedDocIds}
             />
             {hasIndexing ? (
-              <span className="text-xs text-primary flex items-center gap-1.5 font-medium">
-                <Spinner className="w-3 h-3" />
+              <span className="text-xs text-text-light dark:text-text-dark flex items-center gap-1.5 font-medium">
+                <Spinner className="w-3 h-3 text-black dark:text-white" />
                 Indexing {indexingDocs.length} {indexingDocs.length === 1 ? "document" : "documents"}...
               </span>
             ) : (
@@ -142,28 +142,28 @@ export function ChatPage() {
         <div className="flex-1 flex flex-col overflow-hidden relative">
           {!conversationId ? (
             <div className="flex-1 flex flex-col items-center justify-center p-8 text-center max-w-lg mx-auto">
-              <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-4">
+              <div className="w-12 h-12 rounded-full bg-black/5 text-black dark:bg-white/10 dark:text-white flex items-center justify-center mb-4">
                 <Sparkles className="w-6 h-6" />
               </div>
               <h3 className="text-base font-semibold text-text-light dark:text-text-dark">
                 Ask anything across your PDFs
               </h3>
               <p className="mt-1 text-xs text-muted-light dark:text-muted-dark leading-relaxed">
-                DocChat uses hybrid search, cross-encoder reranking, and strict page-level citations to answer your questions accurately.
+                Documind uses hybrid search, cross-encoder reranking, and strict page-level citations to answer your questions accurately.
               </p>
 
               {documents.length === 0 ? (
                 <div className="mt-6">
                   <Link
                     to="/library"
-                    className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-hover shadow-sm transition-colors inline-block"
+                    className="px-4 py-2 bg-black text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200 rounded-lg text-sm font-medium shadow-sm transition-colors inline-block"
                   >
                     Go to Library to Upload PDFs
                   </Link>
                 </div>
               ) : hasIndexing && !hasReady ? (
                 <div className="mt-6 flex flex-col items-center gap-2 text-xs text-muted-light dark:text-muted-dark">
-                  <Spinner className="w-5 h-5 text-primary" />
+                  <Spinner className="w-5 h-5 text-black dark:text-white" />
                   <span>Processing documents ({indexingDocs.length} indexing)...</span>
                   <span>You can ask questions as soon as indexing finishes.</span>
                 </div>
@@ -180,7 +180,7 @@ export function ChatPage() {
                     <button
                       key={idx}
                       onClick={() => handleSendMessage(q, "hybrid_rerank")}
-                      className="w-full p-2.5 text-left text-xs rounded-lg border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark hover:border-primary/50 text-text-light dark:text-text-dark transition-colors shadow-2xs"
+                      className="w-full p-2.5 text-left text-xs rounded-lg border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark hover:border-black/40 dark:hover:border-white/40 text-text-light dark:text-text-dark transition-colors shadow-2xs"
                     >
                       {q}
                     </button>
@@ -190,11 +190,11 @@ export function ChatPage() {
             </div>
           ) : messagesLoading ? (
             <div className="flex-1 flex items-center justify-center">
-              <Spinner className="w-8 h-8" />
+              <Spinner className="w-8 h-8 text-black dark:text-white" />
             </div>
           ) : messages.length === 0 && !draft ? (
             <div className="flex-1 flex flex-col items-center justify-center p-8 text-center max-w-lg mx-auto">
-              <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-4">
+              <div className="w-12 h-12 rounded-full bg-black/5 text-black dark:bg-white/10 dark:text-white flex items-center justify-center mb-4">
                 <MessageSquare className="w-6 h-6" />
               </div>
               <h3 className="text-base font-semibold text-text-light dark:text-text-dark">
@@ -217,7 +217,7 @@ export function ChatPage() {
                     <button
                       key={idx}
                       onClick={() => handleSendMessage(q, "hybrid_rerank")}
-                      className="w-full p-2.5 text-left text-xs rounded-lg border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark hover:border-primary/50 text-text-light dark:text-text-dark transition-colors shadow-2xs"
+                      className="w-full p-2.5 text-left text-xs rounded-lg border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark hover:border-black/40 dark:hover:border-white/40 text-text-light dark:text-text-dark transition-colors shadow-2xs"
                     >
                       {q}
                     </button>

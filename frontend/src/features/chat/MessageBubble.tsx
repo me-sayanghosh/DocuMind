@@ -37,7 +37,7 @@ export function MessageBubble({
             className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
               isRefused
                 ? "bg-amber-500/10 text-amber-600 dark:text-amber-400"
-                : "bg-primary/10 text-primary"
+                : "bg-black/5 text-black dark:bg-white/10 dark:text-white"
             }`}
           >
             {isRefused ? <FileQuestion className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
@@ -47,7 +47,7 @@ export function MessageBubble({
         <div
           className={`max-w-[85%] sm:max-w-[80%] rounded-2xl px-4 py-3.5 shadow-xs transition-all ${
             isUser
-              ? "bg-primary text-white rounded-br-xs"
+              ? "bg-black text-white dark:bg-white dark:text-black rounded-br-xs"
               : isRefused
               ? "bg-surface-light dark:bg-surface-dark border border-amber-500/30 dark:border-amber-500/25 text-text-light dark:text-text-dark rounded-bl-xs ring-1 ring-amber-500/10"
               : "bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark text-text-light dark:text-text-dark rounded-bl-xs"
@@ -80,10 +80,10 @@ export function MessageBubble({
                     <button
                       type="button"
                       onClick={() => setInspectorOpen(true)}
-                      className="flex items-center gap-1 text-[11px] hover:text-primary transition-colors cursor-pointer"
+                      className="flex items-center gap-1 text-[11px] hover:text-black dark:hover:text-white transition-colors cursor-pointer"
                       title="Inspect retrieval latency and scores"
                     >
-                      <Activity className="w-3 h-3 text-primary" />
+                      <Activity className="w-3 h-3 text-black dark:text-white" />
                       <span>{message.trace.total_ms}ms</span>
                     </button>
                   )}
