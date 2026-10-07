@@ -48,53 +48,59 @@ export function FailureBrowser({ results }: FailureBrowserProps) {
         </span>
       </div>
 
-      <div className="space-y-3">
-        {filtered.slice(0, 25).map((row, idx) => {
-          const hit5 = row.hit_at_k?.["hit@5"] === 1;
-          return (
-            <div
-              key={idx}
-              className="p-4 rounded-xl border border-border-light dark:border-border-dark bg-bg-light dark:bg-surface-dark text-xs space-y-2 shadow-2xs"
-            >
-              <div className="flex items-start justify-between gap-2">
-                <div className="font-semibold text-text-light dark:text-text-dark">
-                  Q: {row.question}
+      {filtered.length === 0 ? (
+        <div className="p-8 text-center text-xs text-muted-light dark:text-muted-dark border rounded-xl border-dashed border-border-light dark:border-border-dark">
+          No evaluation questions match the selected filter.
+        </div>
+      ) : (
+        <div className="max-h-[620px] overflow-y-auto pr-2 space-y-3">
+          {filtered.map((row, idx) => {
+            const hit5 = row.hit_at_k?.["hit@5"] === 1;
+            return (
+              <div
+                key={idx}
+                className="p-4 rounded-xl border border-border-light dark:border-border-dark bg-bg-light dark:bg-surface-dark text-xs space-y-2 shadow-2xs"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="font-semibold text-text-light dark:text-text-dark">
+                    Q: {row.question}
+                  </div>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className="font-mono uppercase text-[10px] px-1.5 py-0.5 rounded bg-surface-light dark:bg-border-dark">
+                      {row.mode}
+                    </span>
+                    {hit5 ? (
+                      <span className="flex items-center gap-1 text-emerald-600 font-medium">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        Hit@5
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-1 text-red-500 font-medium">
+                        <XCircle className="w-3.5 h-3.5" />
+                        Miss
+                      </span>
+                    )}
+                  </div>
                 </div>
-                <div className="flex items-center gap-1.5 shrink-0">
-                  <span className="font-mono uppercase text-[10px] px-1.5 py-0.5 rounded bg-surface-light dark:bg-border-dark">
-                    {row.mode}
+
+                <div className="text-muted-light dark:text-muted-dark bg-surface-light/50 dark:bg-border-dark/20 p-2.5 rounded-lg">
+                  <span className="font-medium text-text-light dark:text-text-dark block mb-1">
+                    Generated Answer:
                   </span>
-                  {hit5 ? (
-                    <span className="flex items-center gap-1 text-emerald-600 font-medium">
-                      <CheckCircle2 className="w-3.5 h-3.5" />
-                      Hit@5
-                    </span>
-                  ) : (
-                    <span className="flex items-center gap-1 text-red-500 font-medium">
-                      <XCircle className="w-3.5 h-3.5" />
-                      Miss
-                    </span>
-                  )}
+                  <p className="line-clamp-3 italic">"{row.answer}"</p>
+                </div>
+
+                <div className="flex items-center gap-4 text-[11px] text-muted-light dark:text-muted-dark pt-1 border-t border-border-light/40 dark:border-border-dark/40">
+                  <span>Faithfulness: {(row.faithfulness * 100).toFixed(0)}%</span>
+                  <span>Citation Acc: {(row.citation_accuracy * 100).toFixed(0)}%</span>
+                  <span>MRR: {row.rr.toFixed(2)}</span>
+                  <span>Latency: {row.latency_ms} ms</span>
                 </div>
               </div>
-
-              <div className="text-muted-light dark:text-muted-dark bg-surface-light/50 dark:bg-border-dark/20 p-2.5 rounded-lg">
-                <span className="font-medium text-text-light dark:text-text-dark block mb-1">
-                  Generated Answer:
-                </span>
-                <p className="line-clamp-3 italic">"{row.answer}"</p>
-              </div>
-
-              <div className="flex items-center gap-4 text-[11px] text-muted-light dark:text-muted-dark pt-1 border-t border-border-light/40 dark:border-border-dark/40">
-                <span>Faithfulness: {(row.faithfulness * 100).toFixed(0)}%</span>
-                <span>Citation Acc: {(row.citation_accuracy * 100).toFixed(0)}%</span>
-                <span>MRR: {row.rr.toFixed(2)}</span>
-                <span>Latency: {row.latency_ms} ms</span>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

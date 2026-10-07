@@ -139,7 +139,7 @@ export function EvalsPage() {
             <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-light dark:text-muted-dark px-2">
               Evaluation Runs
             </h3>
-            <div className="space-y-1">
+            <div className="space-y-1 max-h-[calc(100vh-250px)] overflow-y-auto pr-1">
               {runs.map((r) => {
                 const isSelected = r.id === activeRunId;
                 const hasError = !!r.summary?.error;
