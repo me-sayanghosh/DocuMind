@@ -24,8 +24,8 @@ class Settings(BaseSettings):
     ANTHROPIC_API_KEY: str = ""
     GEMINI_API_KEY: str = ""
     LLM_PROVIDER: str = "fake"  # 'anthropic', 'gemini', or 'fake'
-    LLM_MODEL: str = "claude-3-5-sonnet-20241022"
-    LLM_FAST_MODEL: str = "claude-3-5-haiku-20241022"
+    LLM_MODEL: str = "gemini-3.8-flash"
+    LLM_FAST_MODEL: str = "gemini-3.8-flash"
 
     # Embeddings & Reranking
     EMBED_PROVIDER: str = "hash"  # 'hash', 'sentence_transformers', or 'fake'
