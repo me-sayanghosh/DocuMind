@@ -98,7 +98,8 @@ export function EvalsPage() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-6 space-y-8">
+    <div className="flex-1 h-full overflow-y-auto w-full">
+      <div className="max-w-6xl mx-auto p-6 space-y-8">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-text-light dark:text-text-dark">
@@ -284,6 +285,7 @@ export function EvalsPage() {
           </div>
         </div>
       </Dialog>
+      </div>
     </div>
   );
 }
