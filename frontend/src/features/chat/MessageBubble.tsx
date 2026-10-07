@@ -56,59 +56,14 @@ export function MessageBubble({
           {isUser ? (
             <p className="text-sm whitespace-pre-wrap">{message.content}</p>
           ) : isRefused ? (
-            <div className="space-y-2.5">
-              {/* Header: Status badge & Score / Diagnostics */}
-              <div className="flex items-center justify-between gap-2 flex-wrap pb-2 border-b border-border-light/50 dark:border-border-dark/50">
-                <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20">
-                    <FileQuestion className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
-                    Unanswerable from documents
-                  </span>
-                  {message.trace?.top_score !== undefined && (
-                    <span
-                      className="text-[11px] font-mono px-2 py-0.5 rounded bg-amber-500/5 text-amber-700/80 dark:text-amber-400/80 border border-amber-500/15"
-                      title="Top candidate score fell below relevance threshold (0.35)"
-                    >
-                      Score: {message.trace.top_score.toFixed(2)} &lt; 0.35
-                    </span>
-                  )}
-                </div>
-
-                {message.trace && (
-                  <button
-                    type="button"
-                    onClick={() => setInspectorOpen(true)}
-                    className="inline-flex items-center gap-1 text-[11px] text-muted-light dark:text-muted-dark hover:text-primary transition-colors cursor-pointer"
-                    title="Open retrieval inspector"
-                  >
-                    <Activity className="w-3 h-3 text-primary" />
-                    <span>{message.trace.total_ms}ms</span>
-                  </button>
-                )}
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-600 dark:text-amber-400">
+                <FileQuestion className="w-3.5 h-3.5 shrink-0" />
+                <span>Unanswerable from documents</span>
               </div>
 
-              {/* Message content */}
-              <div className="text-sm font-medium text-text-light dark:text-text-dark">
+              <div className="text-sm text-text-light dark:text-text-dark">
                 <Markdown content={message.content} citations={message.citations} />
-              </div>
-
-              {/* Footer */}
-              <div className="pt-2 flex items-center justify-between text-xs text-muted-light dark:text-muted-dark border-t border-border-light/50 dark:border-border-dark/50">
-                <div className="flex items-center gap-2">
-                  {message.retrieval_mode && (
-                    <span className="text-[10px] uppercase font-mono tracking-wider opacity-75">
-                      {message.retrieval_mode}
-                    </span>
-                  )}
-                </div>
-
-                {onFeedback && (
-                  <FeedbackButtons
-                    messageId={message.id}
-                    initialFeedback={message.feedback}
-                    onFeedback={onFeedback}
-                  />
-                )}
               </div>
             </div>
           ) : (

@@ -53,14 +53,14 @@ export function AppShell() {
         <div className="space-y-6">
           {/* Logo */}
           <div className="flex items-center gap-2.5 px-2">
-            <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold text-lg shadow-sm">
+            <div className="w-8 h-8 rounded-lg bg-black text-white dark:bg-white dark:text-black flex items-center justify-center font-bold text-lg shadow-sm">
               D
             </div>
             <div>
               <span className="font-bold text-base tracking-tight text-text-light dark:text-text-dark">
                 DocChat
               </span>
-              <span className="text-[10px] block text-primary font-semibold uppercase tracking-wider">
+              <span className="text-[10px] block text-muted-light dark:text-muted-dark font-medium uppercase tracking-wider">
                 Verifiable RAG
               </span>
             </div>
@@ -80,7 +80,7 @@ export function AppShell() {
                   to={item.path}
                   className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                     isActive
-                      ? "bg-primary text-white shadow-sm"
+                      ? "bg-black text-white dark:bg-white dark:text-black shadow-sm font-semibold"
                       : "text-muted-light dark:text-muted-dark hover:text-text-light dark:hover:text-text-dark hover:bg-border-light/40 dark:hover:bg-border-dark/40"
                   }`}
                 >
