@@ -8,18 +8,52 @@ export interface ComposerProps {
   isStreaming: boolean;
   disabled?: boolean;
   placeholder?: string;
+  text?: string;
+  onTextChange?: (val: string) => void;
+  mode?: string;
+  onModeChange?: (val: string) => void;
 }
 
-export function Composer({ onSend, onStop, isStreaming, disabled = false, placeholder }: ComposerProps) {
-  const [text, setText] = useState("");
-  const [mode, setMode] = useState("hybrid_rerank");
+export function Composer({
+  onSend,
+  onStop,
+  isStreaming,
+  disabled = false,
+  placeholder,
+  text: controlledText,
+  onTextChange,
+  mode: controlledMode,
+  onModeChange,
+}: ComposerProps) {
+  const [internalText, setInternalText] = useState("");
+  const [internalMode, setInternalMode] = useState("hybrid_rerank");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const text = controlledText !== undefined ? controlledText : internalText;
+  const mode = controlledMode !== undefined ? controlledMode : internalMode;
+
+  const handleTextChange = (newVal: string) => {
+    if (onTextChange) onTextChange(newVal);
+    if (controlledText === undefined) setInternalText(newVal);
+  };
+
+  const handleModeChange = (newVal: string) => {
+    if (onModeChange) onModeChange(newVal);
+    if (controlledMode === undefined) setInternalMode(newVal);
+  };
 
   useEffect(() => {
     if (!isStreaming) {
       textareaRef.current?.focus();
     }
   }, [isStreaming]);
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 180)}px`;
+    }
+  }, [text]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -31,43 +65,18 @@ export function Composer({ onSend, onStop, isStreaming, disabled = false, placeh
   const handleSubmit = () => {
     if (!text.trim() || isStreaming || disabled) return;
     onSend(text.trim(), mode);
-    setText("");
+    handleTextChange("");
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
     }
   };
 
   const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setText(e.target.value);
-    e.target.style.height = "auto";
-    e.target.style.height = `${Math.min(e.target.scrollHeight, 180)}px`;
+    handleTextChange(e.target.value);
   };
 
   return (
     <div className="p-4 border-t border-border-light dark:border-border-dark bg-bg-light dark:bg-surface-dark">
-      <div className="flex items-center justify-between mb-2 text-xs text-muted-light dark:text-muted-dark">
-        <div className="flex items-center gap-2">
-          <span className="font-medium">Mode:</span>
-          <select
-            value={mode}
-            onChange={(e) => setMode(e.target.value)}
-            disabled={isStreaming}
-            className="bg-surface-light dark:bg-border-dark/50 border border-border-light dark:border-border-dark rounded px-2 py-0.5 text-xs text-text-light dark:text-text-dark focus:outline-none"
-          >
-            <option value="hybrid_rerank">Hybrid + Rerank (Recommended)</option>
-            <option value="hybrid">Hybrid (RRF)</option>
-            <option value="vector">Vector Only</option>
-            <option value="fts">FTS Lexical Only</option>
-          </select>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <span className={text.length > 3800 ? "text-amber-500 font-bold" : ""}>
-            {text.length}/4000
-          </span>
-        </div>
-      </div>
-
       <div className="relative flex items-end gap-2 bg-surface-light dark:bg-border-dark/30 rounded-xl border border-border-light dark:border-border-dark p-2 focus-within:ring-2 focus-within:ring-primary focus-within:border-transparent transition-all">
         <textarea
           ref={textareaRef}
@@ -85,6 +94,12 @@ export function Composer({ onSend, onStop, isStreaming, disabled = false, placeh
           }
           className="flex-1 bg-transparent border-0 resize-none focus:outline-none text-sm text-text-light dark:text-text-dark placeholder:text-muted-light dark:placeholder:text-muted-dark max-h-44 py-1.5 px-2"
         />
+
+        {text.length > 3800 && (
+          <span className="text-[11px] text-amber-500 font-mono font-medium self-center px-1 shrink-0">
+            {text.length}/4000
+          </span>
+        )}
 
         {isStreaming ? (
           <Button

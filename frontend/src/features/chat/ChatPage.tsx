@@ -23,6 +23,8 @@ export function ChatPage() {
 
   const viewerOpen = useViewerStore((s) => s.open);
   const [selectedDocIds, setSelectedDocIds] = useState<string[]>([]);
+  const [composerText, setComposerText] = useState("");
+  const [composerMode, setComposerMode] = useState("hybrid_rerank");
 
   const readyDocs = documents.filter((d) => d.status === "ready");
   const indexingDocs = documents.filter((d) => d.status === "queued" || d.status === "processing");
@@ -69,7 +71,37 @@ export function ChatPage() {
         return;
       }
     }
+    setComposerMode(mode);
     send(text, { mode, docIds: selectedDocIds, conversationId: targetConvId });
+  };
+
+  const handleRetry = async (text: string, mode: string) => {
+    await handleSendMessage(text, mode);
+  };
+
+  const handleExpandScopeAndRetry = async (text: string, mode: string) => {
+    setSelectedDocIds([]);
+    setComposerMode(mode);
+    let targetConvId = conversationId;
+    if (!targetConvId) {
+      try {
+        const title = text.length > 36 ? text.slice(0, 36) + "..." : text;
+        const newConv = await createConversation({
+          title,
+          doc_ids: undefined,
+        });
+        targetConvId = newConv.id;
+        navigate(`/chat/${newConv.id}`);
+      } catch (err) {
+        console.error("Failed to create conversation", err);
+        return;
+      }
+    }
+    send(text, { mode, docIds: [], conversationId: targetConvId });
+  };
+
+  const handlePopulateComposer = (questionText: string) => {
+    setComposerText(questionText);
   };
 
   return (
@@ -200,11 +232,12 @@ export function ChatPage() {
               streamingDraft={draft}
               streamingSources={sources}
               streamingCitations={citations}
-              onFeedback={async (val) => {
-                const lastAssistant = [...messages].reverse().find((m) => m.role === "assistant");
-                if (lastAssistant) {
-                  await submitFeedback({ messageId: lastAssistant.id, value: val });
-                }
+              hasScopedFilter={selectedDocIds.length > 0}
+              onRetry={handleRetry}
+              onExpandScopeAndRetry={handleExpandScopeAndRetry}
+              onPopulateComposer={handlePopulateComposer}
+              onFeedback={async (messageId, val) => {
+                await submitFeedback({ messageId, value: val });
               }}
             />
           )}
@@ -222,6 +255,10 @@ export function ChatPage() {
           onStop={stop}
           isStreaming={state !== "idle" && state !== "error"}
           disabled={!hasReady}
+          text={composerText}
+          onTextChange={setComposerText}
+          mode={composerMode}
+          onModeChange={setComposerMode}
           placeholder={
             !hasReady
               ? hasIndexing

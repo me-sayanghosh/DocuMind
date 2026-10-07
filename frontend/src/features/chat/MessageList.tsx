@@ -11,7 +11,11 @@ export interface MessageListProps {
   streamingDraft?: string;
   streamingSources?: any[];
   streamingCitations?: any[];
-  onFeedback?: (val: number) => Promise<any>;
+  hasScopedFilter?: boolean;
+  onRetry?: (text: string, mode: string) => void;
+  onExpandScopeAndRetry?: (text: string, mode: string) => void;
+  onPopulateComposer?: (text: string) => void;
+  onFeedback?: (messageId: string, val: number) => Promise<any>;
 }
 
 export function MessageList({
@@ -20,6 +24,10 @@ export function MessageList({
   streamingDraft = "",
   streamingSources: _streamingSources = [],
   streamingCitations = [],
+  hasScopedFilter = false,
+  onRetry,
+  onExpandScopeAndRetry,
+  onPopulateComposer,
   onFeedback,
 }: MessageListProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -47,9 +55,30 @@ export function MessageList({
 
   return (
     <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 space-y-2" aria-live="polite">
-      {messages.map((m) => (
-        <MessageBubble key={m.id} message={m} onFeedback={onFeedback} />
-      ))}
+      {messages.map((m, idx) => {
+        let previousUserMessage: Message | undefined;
+        if (m.role === "assistant") {
+          for (let i = idx - 1; i >= 0; i--) {
+            if (messages[i].role === "user") {
+              previousUserMessage = messages[i];
+              break;
+            }
+          }
+        }
+
+        return (
+          <MessageBubble
+            key={m.id}
+            message={m}
+            previousUserMessage={previousUserMessage}
+            hasScopedFilter={hasScopedFilter}
+            onRetry={onRetry}
+            onExpandScopeAndRetry={onExpandScopeAndRetry}
+            onPopulateComposer={onPopulateComposer}
+            onFeedback={onFeedback ? (val) => onFeedback(m.id, val) : undefined}
+          />
+        );
+      })}
 
       {/* Streaming bubble */}
       {isStreaming && (
