@@ -11,7 +11,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from app.db.base import Base
 from app.db.session import async_session_factory, engine
 from app.models.user import User
-from app.models.workspace import Workspace, WorkspaceMember
+from app.models.workspace import Workspace
 from app.services.auth_service import auth_service
 from app.services.document_service import document_service
 

@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime, timezone
-from typing import List, Optional
+from typing import Optional
 from sqlalchemy import DateTime, Float, ForeignKey, Index, Integer, PrimaryKeyConstraint, SmallInteger, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship

@@ -1,11 +1,11 @@
 import hashlib
 import uuid
-from typing import List, Optional, Tuple
+from typing import List, Tuple
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
-from app.core.errors import IngestionException, NotFoundException, PayloadTooLargeException, UnsupportedMediaTypeException
+from app.core.errors import NotFoundException
 from app.models.chunk import Chunk
 from app.models.document import Document
 from app.rag.chunker import chunk_document

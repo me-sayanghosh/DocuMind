@@ -1,5 +1,4 @@
 import asyncio
-import os
 import sys
 from logging.config import fileConfig
 from pathlib import Path
@@ -16,7 +15,6 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from app.core.config import settings
 from app.db.base import Base
-import app.models  # register all models
 
 config = context.config
 

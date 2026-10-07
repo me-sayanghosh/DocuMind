@@ -12,6 +12,14 @@ async def enqueue_document_ingestion(document_id: uuid.UUID) -> None:
     try:
         redis_settings = RedisSettings.from_dsn(settings.REDIS_URL)
         redis = await create_pool(redis_settings)
+        # Check if an active ARQ worker is registered
+        worker_keys = await redis.keys("arq:worker:*")
+        if not worker_keys:
+            await redis.close()
+            import asyncio
+            asyncio.create_task(run_ingestion_direct(document_id))
+            return
+
         await redis.enqueue_job("ingest_document", str(document_id))
         await redis.close()
     except Exception:

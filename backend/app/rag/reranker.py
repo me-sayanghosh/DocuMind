@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import re
-from typing import List, Optional, Protocol, Tuple
+from typing import List, Protocol
 from app.core.config import settings
 from app.rag.retrievers import Candidate
 

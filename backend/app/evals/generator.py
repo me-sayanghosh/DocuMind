@@ -1,6 +1,6 @@
 import random
 import uuid
-from typing import List, Optional, Tuple
+from typing import List, Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 

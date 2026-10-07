@@ -1,6 +1,6 @@
 import json
 import re
-from typing import Dict, Optional, Tuple
+from typing import Optional, Tuple
 from app.rag.generator import LLM, get_llm
 
 JUDGE_SYSTEM_PROMPT = """You are an objective evaluation judge for a RAG system.

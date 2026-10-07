@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 import time
 import uuid
-from typing import Any, Dict, List
+from typing import Dict, List
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -9,8 +9,8 @@ from sqlalchemy.orm import selectinload
 from app.core.config import settings
 from app.evals.generator import question_generator
 from app.evals.judge import eval_judge
-from app.evals.metrics import calculate_hit_at_k, calculate_mrr, calculate_recall_at_k
-from app.models.eval import EvalQuestion, EvalResult, EvalRun
+from app.evals.metrics import calculate_hit_at_k, calculate_mrr
+from app.models.eval import EvalResult, EvalRun
 from app.rag.generator import get_llm
 from app.rag.prompts import SYSTEM_PROMPT, build_sources_prompt, build_user_prompt
 from app.rag.reranker import get_reranker

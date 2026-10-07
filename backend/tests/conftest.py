@@ -1,6 +1,4 @@
-import asyncio
 import os
-import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -13,7 +11,6 @@ os.environ["EMBED_PROVIDER"] = "hash"
 os.environ["STORAGE_BACKEND"] = "local"
 os.environ["UPLOAD_DIR"] = "/tmp/docchat_test/uploads"
 
-from app.core.config import settings
 from app.db.base import Base
 from app.db.session import get_db
 from app.main import create_app

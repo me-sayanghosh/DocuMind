@@ -36,9 +36,10 @@ export function useChatStream(conversationId: string | undefined) {
 
   const send = async (
     content: string,
-    opts: { mode?: string; docIds?: string[] } = {}
+    opts: { mode?: string; docIds?: string[]; conversationId?: string } = {}
   ) => {
-    if (!conversationId) return;
+    const targetConvId = opts.conversationId || conversationId;
+    if (!targetConvId) return;
 
     // Reset previous stream state
     stop();
@@ -54,7 +55,7 @@ export function useChatStream(conversationId: string | undefined) {
     const token = useAuthStore.getState().accessToken;
 
     try {
-      const response = await fetch(`/api/v1/conversations/${conversationId}/messages`, {
+      const response = await fetch(`/api/v1/conversations/${targetConvId}/messages`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -103,7 +104,8 @@ export function useChatStream(conversationId: string | undefined) {
               break;
             case "done":
               setState("idle");
-              queryClient.invalidateQueries({ queryKey: ["messages", conversationId] });
+              queryClient.invalidateQueries({ queryKey: ["messages", targetConvId] });
+              queryClient.invalidateQueries({ queryKey: ["conversations"] });
               break;
             case "error":
               setState("error");

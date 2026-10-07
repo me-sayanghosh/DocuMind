@@ -38,10 +38,12 @@ async def test_tenancy_isolation(client: AsyncClient):
         "/api/v1/auth/register",
         json={"email": "tenant_a@example.com", "password": "Password12345!"},
     )
+    assert reg_a.status_code == 201
     reg_b = await client.post(
         "/api/v1/auth/register",
         json={"email": "tenant_b@example.com", "password": "Password12345!"},
     )
+    assert reg_b.status_code == 201
 
     login_a = await client.post(
         "/api/v1/auth/login",

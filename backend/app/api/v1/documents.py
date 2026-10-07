@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.deps import WorkspaceContext, get_workspace_ctx
 from app.db.session import async_session_factory, get_db
-from app.schemas.document import DocumentEvent, DocumentRead, DocumentUploadResponse
+from app.schemas.document import DocumentRead, DocumentUploadResponse
 from app.services.document_service import document_service
 from app.services.storage_service import storage_service
 from app.worker.tasks import enqueue_document_ingestion

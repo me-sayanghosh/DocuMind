@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { MessageSquare, Sparkles } from "lucide-react";
-import { EmptyState } from "../../components/ui/EmptyState";
 import { Spinner } from "../../components/ui/Spinner";
 import { useChatStream } from "../../hooks/useChatStream";
 import { useConversationMessages, useConversations } from "../../hooks/useConversations";
@@ -26,6 +25,9 @@ export function ChatPage() {
   const [selectedDocIds, setSelectedDocIds] = useState<string[]>([]);
 
   const readyDocs = documents.filter((d) => d.status === "ready");
+  const indexingDocs = documents.filter((d) => d.status === "queued" || d.status === "processing");
+  const hasReady = readyDocs.length > 0;
+  const hasIndexing = indexingDocs.length > 0;
 
   const handleNewChat = async () => {
     const newConv = await createConversation({
@@ -51,8 +53,23 @@ export function ChatPage() {
     }
   };
 
-  const handleSendMessage = (text: string, mode: string) => {
-    send(text, { mode, docIds: selectedDocIds });
+  const handleSendMessage = async (text: string, mode: string) => {
+    let targetConvId = conversationId;
+    if (!targetConvId) {
+      try {
+        const title = text.length > 36 ? text.slice(0, 36) + "..." : text;
+        const newConv = await createConversation({
+          title,
+          doc_ids: selectedDocIds.length > 0 ? selectedDocIds : undefined,
+        });
+        targetConvId = newConv.id;
+        navigate(`/chat/${newConv.id}`);
+      } catch (err) {
+        console.error("Failed to create conversation", err);
+        return;
+      }
+    }
+    send(text, { mode, docIds: selectedDocIds, conversationId: targetConvId });
   };
 
   return (
@@ -76,29 +93,68 @@ export function ChatPage() {
               selectedDocIds={selectedDocIds}
               onChange={setSelectedDocIds}
             />
-            <span className="text-xs text-muted-light dark:text-muted-dark">
-              {readyDocs.length} {readyDocs.length === 1 ? "document" : "documents"} indexed
-            </span>
+            {hasIndexing ? (
+              <span className="text-xs text-primary flex items-center gap-1.5 font-medium">
+                <Spinner className="w-3 h-3" />
+                Indexing {indexingDocs.length} {indexingDocs.length === 1 ? "document" : "documents"}...
+              </span>
+            ) : (
+              <span className="text-xs text-muted-light dark:text-muted-dark">
+                {readyDocs.length} {readyDocs.length === 1 ? "document" : "documents"} indexed
+              </span>
+            )}
           </div>
         </div>
 
         {/* Chat Messages */}
         <div className="flex-1 flex flex-col overflow-hidden relative">
           {!conversationId ? (
-            <div className="flex-1 flex items-center justify-center p-6">
-              <EmptyState
-                icon={Sparkles}
-                title="Ask anything across your PDFs"
-                description="DocChat uses hybrid search, cross-encoder reranking, and strict page-level citations to answer your questions accurately."
-                action={
-                  <button
-                    onClick={handleNewChat}
-                    className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-hover shadow-sm transition-colors"
+            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center max-w-lg mx-auto">
+              <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-4">
+                <Sparkles className="w-6 h-6" />
+              </div>
+              <h3 className="text-base font-semibold text-text-light dark:text-text-dark">
+                Ask anything across your PDFs
+              </h3>
+              <p className="mt-1 text-xs text-muted-light dark:text-muted-dark leading-relaxed">
+                DocChat uses hybrid search, cross-encoder reranking, and strict page-level citations to answer your questions accurately.
+              </p>
+
+              {documents.length === 0 ? (
+                <div className="mt-6">
+                  <Link
+                    to="/library"
+                    className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-hover shadow-sm transition-colors inline-block"
                   >
-                    Start a New Chat
-                  </button>
-                }
-              />
+                    Go to Library to Upload PDFs
+                  </Link>
+                </div>
+              ) : hasIndexing && !hasReady ? (
+                <div className="mt-6 flex flex-col items-center gap-2 text-xs text-muted-light dark:text-muted-dark">
+                  <Spinner className="w-5 h-5 text-primary" />
+                  <span>Processing documents ({indexingDocs.length} indexing)...</span>
+                  <span>You can ask questions as soon as indexing finishes.</span>
+                </div>
+              ) : (
+                <div className="mt-6 w-full space-y-2">
+                  <p className="text-[11px] font-medium text-muted-light dark:text-muted-dark uppercase tracking-wider text-left">
+                    Example questions:
+                  </p>
+                  {[
+                    `What are the termination and notice terms in ${readyDocs[0]?.filename}?`,
+                    `Summarize the key deliverables and timelines mentioned.`,
+                    `What payment obligations or penalties are specified?`,
+                  ].map((q, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => handleSendMessage(q, "hybrid_rerank")}
+                      className="w-full p-2.5 text-left text-xs rounded-lg border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark hover:border-primary/50 text-text-light dark:text-text-dark transition-colors shadow-2xs"
+                    >
+                      {q}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           ) : messagesLoading ? (
             <div className="flex-1 flex items-center justify-center">
@@ -129,7 +185,7 @@ export function ChatPage() {
                     <button
                       key={idx}
                       onClick={() => handleSendMessage(q, "hybrid_rerank")}
-                      className="w-full p-2.5 text-left text-xs rounded-lg border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark hover:border-primary/50 text-text-light dark:text-text-dark transition-colors"
+                      className="w-full p-2.5 text-left text-xs rounded-lg border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark hover:border-primary/50 text-text-light dark:text-text-dark transition-colors shadow-2xs"
                     >
                       {q}
                     </button>
@@ -165,7 +221,14 @@ export function ChatPage() {
           onSend={handleSendMessage}
           onStop={stop}
           isStreaming={state !== "idle" && state !== "error"}
-          disabled={!conversationId || readyDocs.length === 0}
+          disabled={!hasReady}
+          placeholder={
+            !hasReady
+              ? hasIndexing
+                ? "Documents are indexing... Please wait a moment."
+                : "Upload and index documents to start asking questions..."
+              : "Ask a question about your documents... (Enter to send, Shift+Enter for newline)"
+          }
         />
       </div>
 

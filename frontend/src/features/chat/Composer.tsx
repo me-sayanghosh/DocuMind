@@ -7,9 +7,10 @@ export interface ComposerProps {
   onStop: () => void;
   isStreaming: boolean;
   disabled?: boolean;
+  placeholder?: string;
 }
 
-export function Composer({ onSend, onStop, isStreaming, disabled = false }: ComposerProps) {
+export function Composer({ onSend, onStop, isStreaming, disabled = false, placeholder }: ComposerProps) {
   const [text, setText] = useState("");
   const [mode, setMode] = useState("hybrid_rerank");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -77,9 +78,10 @@ export function Composer({ onSend, onStop, isStreaming, disabled = false }: Comp
           disabled={disabled}
           maxLength={4000}
           placeholder={
-            disabled
+            placeholder ??
+            (disabled
               ? "Upload and index documents to start asking questions..."
-              : "Ask a question about your documents... (Enter to send, Shift+Enter for newline)"
+              : "Ask a question about your documents... (Enter to send, Shift+Enter for newline)")
           }
           className="flex-1 bg-transparent border-0 resize-none focus:outline-none text-sm text-text-light dark:text-text-dark placeholder:text-muted-light dark:placeholder:text-muted-dark max-h-44 py-1.5 px-2"
         />

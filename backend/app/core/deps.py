@@ -1,13 +1,12 @@
 import uuid
 from dataclasses import dataclass
-from typing import Annotated, Optional
+from typing import Optional
 
-from fastapi import Depends, Header, HTTPException, Request, status
+from fastapi import Depends, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.config import settings
 from app.core.errors import ForbiddenException, NotFoundException, UnauthorizedException
 from app.core.security import decode_access_token
 from app.db.session import get_db, set_db_user_context

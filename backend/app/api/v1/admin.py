@@ -1,4 +1,3 @@
-import statistics
 from typing import Dict, List
 from fastapi import APIRouter, Depends
 from sqlalchemy import func, select

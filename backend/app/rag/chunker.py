@@ -1,7 +1,7 @@
 import re
 from dataclasses import dataclass, field
 from typing import Any, Dict, List
-from app.rag.parser import BBox, ParsedDocument, TextBlock
+from app.rag.parser import ParsedDocument, TextBlock
 
 
 @dataclass
@@ -50,7 +50,6 @@ def chunk_document(
         # If a single block exceeds target_tokens, split it by sentences
         if block_tokens > target_tokens * 1.2:
             sentences = re.split(r"(?<=[.!?])\s+", block.text)
-            sub_text = ""
             for s in sentences:
                 s_tokens = estimate_tokens(s)
                 if current_tokens + s_tokens > target_tokens and current_blocks:

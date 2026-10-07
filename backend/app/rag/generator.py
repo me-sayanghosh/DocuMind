@@ -1,6 +1,6 @@
 import asyncio
 import re
-from typing import Any, AsyncIterator, Dict, List, Optional, Protocol
+from typing import AsyncIterator, Dict, List, Optional, Protocol
 from app.core.config import settings
 
 

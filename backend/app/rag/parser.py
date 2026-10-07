@@ -1,7 +1,6 @@
-import io
 import re
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List
 import fitz  # PyMuPDF
 
 from app.core.errors import IngestionException, PayloadTooLargeException, UnsupportedMediaTypeException

@@ -1,7 +1,7 @@
 import asyncio
 import json
 import uuid
-from typing import List, Optional
+from typing import List
 from fastapi import APIRouter, Depends, Query, Response, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
