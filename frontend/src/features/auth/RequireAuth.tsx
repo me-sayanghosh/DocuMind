@@ -1,52 +1,54 @@
 import { useEffect, useState } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { Spinner } from "../../components/ui/Spinner";
-import { apiClient } from "../../lib/apiClient";
-import { useAuthStore } from "../../lib/auth";
+import { apiClient, silentRefreshToken } from "../../lib/apiClient";
+import { isTokenExpired, useAuthStore } from "../../lib/auth";
 import { MeResponse } from "../../types/api";
 
 export function RequireAuth() {
   const location = useLocation();
   const { accessToken, user, setAuth, logout } = useAuthStore();
-  const [checking, setChecking] = useState(!accessToken);
+
+  const hasValidSession = Boolean(accessToken && user && !isTokenExpired(accessToken));
+  const [checking, setChecking] = useState(!hasValidSession);
 
   useEffect(() => {
     let mounted = true;
-    const tryInit = async () => {
-      if (!accessToken) {
-        try {
-          // Attempt silent refresh
-          const refreshRes = await fetch("/api/v1/auth/refresh", {
-            method: "POST",
-            credentials: "include",
-            headers: { "X-Requested-With": "XMLHttpRequest" },
-          });
 
-          if (refreshRes.ok) {
-            const data = await refreshRes.json();
-            useAuthStore.getState().setAccessToken(data.access_token);
-            const meRes = await apiClient<MeResponse>("/auth/me");
-            if (mounted) {
-              setAuth(data.access_token, meRes.user, meRes.workspaces);
-            }
-          } else {
-            if (mounted) logout();
+    const verifyOrRefresh = async () => {
+      const currentToken = useAuthStore.getState().accessToken;
+      const currentUser = useAuthStore.getState().user;
+
+      // 1. If valid session already exists in memory/localStorage, proceed immediately
+      if (currentToken && currentUser && !isTokenExpired(currentToken)) {
+        if (mounted) setChecking(false);
+        return;
+      }
+
+      // 2. If token is missing or expired, attempt single-flight silent refresh
+      try {
+        const newToken = await silentRefreshToken();
+        if (newToken) {
+          const meRes = await apiClient<MeResponse>("/auth/me");
+          if (mounted) {
+            setAuth(newToken, meRes.user, meRes.workspaces);
           }
-        } catch {
+        } else {
           if (mounted) logout();
-        } finally {
-          if (mounted) setChecking(false);
         }
-      } else {
-        setChecking(false);
+      } catch {
+        if (mounted) logout();
+      } finally {
+        if (mounted) setChecking(false);
       }
     };
 
-    tryInit();
+    verifyOrRefresh();
+
     return () => {
       mounted = false;
     };
-  }, [accessToken, setAuth, logout]);
+  }, [setAuth, logout]);
 
   if (checking) {
     return (

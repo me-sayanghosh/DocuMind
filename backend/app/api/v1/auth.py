@@ -32,7 +32,7 @@ def set_refresh_cookie(response: Response, raw_token: str) -> None:
         httponly=True,
         secure=settings.ENVIRONMENT == "production",
         samesite="lax",
-        path="/api/v1/auth",
+        path="/",
     )
 
 
@@ -96,7 +96,7 @@ async def logout(
 ):
     if refresh_token:
         await auth_service.logout(db, raw_refresh_token=refresh_token)
-    response.delete_cookie(key="refresh_token", path="/api/v1/auth")
+    response.delete_cookie(key="refresh_token", path="/")
 
 
 @router.get("/me", response_model=MeResponse)

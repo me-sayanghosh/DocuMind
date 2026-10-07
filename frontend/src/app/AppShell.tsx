@@ -34,9 +34,17 @@ export function AppShell() {
     { label: "Settings", path: "/settings", icon: Settings },
   ];
 
-  if (user?.is_admin) {
-    navItems.splice(3, 0, { label: "Admin", path: "/admin", icon: Shield });
-  }
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/v1/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch {
+      // Ignore network errors during sign out
+    }
+    logout();
+  };
 
   return (
     <div className="flex h-screen w-full bg-bg-light dark:bg-bg-dark text-text-light dark:text-text-dark font-sans overflow-hidden">
@@ -106,7 +114,7 @@ export function AppShell() {
           </div>
 
           <button
-            onClick={() => logout()}
+            onClick={handleLogout}
             className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors"
           >
             <LogOut className="w-3.5 h-3.5 shrink-0" />

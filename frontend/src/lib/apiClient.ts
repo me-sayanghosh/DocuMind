@@ -16,6 +16,44 @@ export class ApiError extends Error {
   }
 }
 
+// Single-flight promise mutex to deduplicate concurrent refresh calls
+let refreshPromise: Promise<string | null> | null = null;
+
+export async function silentRefreshToken(): Promise<string | null> {
+  if (refreshPromise) {
+    return refreshPromise;
+  }
+
+  refreshPromise = (async () => {
+    try {
+      const refreshRes = await fetch(`${BASE_URL}/auth/refresh`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "X-Requested-With": "XMLHttpRequest",
+        },
+      });
+
+      if (!refreshRes.ok) {
+        return null;
+      }
+
+      const refreshData = await refreshRes.json();
+      const newToken = refreshData.access_token;
+      if (newToken) {
+        useAuthStore.getState().setAccessToken(newToken);
+      }
+      return newToken;
+    } catch {
+      return null;
+    } finally {
+      refreshPromise = null;
+    }
+  })();
+
+  return refreshPromise;
+}
+
 let isRefreshing = false;
 let failedQueue: Array<{
   resolve: (value?: unknown) => void;
@@ -65,21 +103,11 @@ export async function apiClient<T = any>(
     isRefreshing = true;
 
     try {
-      const refreshRes = await fetch(`${BASE_URL}/auth/refresh`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "X-Requested-With": "XMLHttpRequest",
-        },
-      });
-
-      if (!refreshRes.ok) {
+      const newToken = await silentRefreshToken();
+      if (!newToken) {
         throw new Error("Refresh failed");
       }
 
-      const refreshData = await refreshRes.json();
-      const newToken = refreshData.access_token;
-      store.setAccessToken(newToken);
       processQueue(null, newToken);
 
       // Retry original request with new token
