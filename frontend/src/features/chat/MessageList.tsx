@@ -83,14 +83,14 @@ export function MessageList({
       {/* Streaming bubble */}
       {isStreaming && (
         <div className="flex gap-3 py-4 justify-start animate-in fade-in duration-200">
-          <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+          <div className="w-8 h-8 rounded-lg bg-black/5 text-black dark:bg-white/10 dark:text-white flex items-center justify-center shrink-0">
             <Bot className="w-4 h-4" />
           </div>
 
           <div className="max-w-[85%] sm:max-w-[75%] rounded-2xl rounded-bl-xs px-4 py-3 bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark text-text-light dark:text-text-dark shadow-2xs">
             {!streamingDraft && (
               <div className="flex items-center gap-2 text-xs text-muted-light dark:text-muted-dark py-1">
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" />
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-black dark:text-white" />
                 <span>{getStatusText(streamingState)}</span>
               </div>
             )}
@@ -98,7 +98,7 @@ export function MessageList({
             {streamingDraft && (
               <>
                 <Markdown content={streamingDraft} citations={streamingCitations} />
-                <span className="inline-block w-1.5 h-3.5 bg-primary ml-1 animate-pulse" />
+                <span className="inline-block w-1.5 h-3.5 bg-black dark:bg-white ml-1 animate-pulse" />
               </>
             )}
 

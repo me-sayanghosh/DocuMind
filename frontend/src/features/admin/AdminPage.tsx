@@ -39,7 +39,7 @@ export function AdminPage() {
         <div className="p-5 rounded-xl border border-border-light dark:border-border-dark bg-bg-light dark:bg-surface-dark">
           <div className="flex items-center justify-between text-muted-light dark:text-muted-dark">
             <span className="text-xs font-semibold uppercase tracking-wider">Total Queries</span>
-            <Activity className="w-4 h-4 text-primary" />
+            <Activity className="w-4 h-4 text-black dark:text-white" />
           </div>
           <p className="mt-2 text-2xl font-bold text-text-light dark:text-text-dark">
             {metrics?.query_volume || 0}
@@ -59,7 +59,7 @@ export function AdminPage() {
         <div className="p-5 rounded-xl border border-border-light dark:border-border-dark bg-bg-light dark:bg-surface-dark">
           <div className="flex items-center justify-between text-muted-light dark:text-muted-dark">
             <span className="text-xs font-semibold uppercase tracking-wider">Registered Users</span>
-            <Users className="w-4 h-4 text-primary" />
+            <Users className="w-4 h-4 text-black dark:text-white" />
           </div>
           <p className="mt-2 text-2xl font-bold text-text-light dark:text-text-dark">
             {usage.length}

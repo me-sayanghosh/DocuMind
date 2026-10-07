@@ -40,7 +40,7 @@ export function ConversationSidebar({
               key={conv.id}
               className={`group flex items-center justify-between px-2.5 py-2 rounded-lg text-xs cursor-pointer transition-colors ${
                 isActive
-                  ? "bg-primary/10 text-primary font-semibold"
+                  ? "bg-black/10 dark:bg-white/10 text-black dark:text-white font-semibold"
                   : "text-text-light dark:text-text-dark hover:bg-surface-light dark:hover:bg-surface-dark"
               }`}
               onClick={() => onSelect(conv.id)}

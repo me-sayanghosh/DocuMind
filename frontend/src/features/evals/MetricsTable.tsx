@@ -2,7 +2,8 @@ import { formatPercent } from "../../lib/format";
 
 export interface MetricsTableProps {
   summary: {
-    modes: Record<
+    error?: string;
+    modes?: Record<
       string,
       {
         "hit@5": number;
@@ -17,14 +18,23 @@ export interface MetricsTableProps {
 }
 
 export function MetricsTable({ summary }: MetricsTableProps) {
-  const modes = Object.keys(summary.modes || {});
+  const modesMap = summary.modes || {};
+  const modes = Object.keys(modesMap);
 
   // Find best values for highlighting
-  const bestHit5 = modes.length > 0 ? Math.max(...modes.map((m) => summary.modes[m]?.["hit@5"] ?? 0)) : 0;
-  const bestMrr = modes.length > 0 ? Math.max(...modes.map((m) => summary.modes[m]?.mrr ?? 0)) : 0;
-  const bestFaith = modes.length > 0 ? Math.max(...modes.map((m) => summary.modes[m]?.faithfulness ?? 0)) : 0;
-  const bestCite = modes.length > 0 ? Math.max(...modes.map((m) => summary.modes[m]?.citation_acc ?? 0)) : 0;
-  const bestRefusal = modes.length > 0 ? Math.max(...modes.map((m) => summary.modes[m]?.refusal_correct ?? 0)) : 0;
+  const bestHit5 = modes.length > 0 ? Math.max(...modes.map((m) => modesMap[m]?.["hit@5"] ?? 0)) : 0;
+  const bestMrr = modes.length > 0 ? Math.max(...modes.map((m) => modesMap[m]?.mrr ?? 0)) : 0;
+  const bestFaith = modes.length > 0 ? Math.max(...modes.map((m) => modesMap[m]?.faithfulness ?? 0)) : 0;
+  const bestCite = modes.length > 0 ? Math.max(...modes.map((m) => modesMap[m]?.citation_acc ?? 0)) : 0;
+  const bestRefusal = modes.length > 0 ? Math.max(...modes.map((m) => modesMap[m]?.refusal_correct ?? 0)) : 0;
+
+  if (modes.length === 0) {
+    return (
+      <div className="p-6 text-center text-sm text-muted-light dark:text-muted-dark border rounded-xl border-dashed">
+        No retrieval benchmark metrics available for this run.
+      </div>
+    );
+  }
 
   return (
     <div className="w-full overflow-x-auto rounded-xl border border-border-light dark:border-border-dark bg-bg-light dark:bg-surface-dark">
@@ -42,20 +52,20 @@ export function MetricsTable({ summary }: MetricsTableProps) {
         </thead>
         <tbody className="divide-y divide-border-light dark:divide-border-dark">
           {modes.map((mode) => {
-            const m = summary.modes[mode];
+            const m = modesMap[mode];
             if (!m) return null;
             const isHybridRerank = mode === "hybrid_rerank";
             return (
               <tr
                 key={mode}
                 className={`hover:bg-surface-light/50 dark:hover:bg-surface-dark/50 transition-colors ${
-                  isHybridRerank ? "font-semibold bg-primary/5" : ""
+                  isHybridRerank ? "font-semibold bg-black/5 dark:bg-white/5" : ""
                 }`}
               >
                 <td className="py-3 px-4 capitalize">
                   {mode.replace("_", " ")}
                   {isHybridRerank && (
-                    <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded bg-primary/10 text-primary uppercase font-bold">
+                    <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded bg-black/10 dark:bg-white/15 text-black dark:text-white uppercase font-bold">
                       Target
                     </span>
                   )}

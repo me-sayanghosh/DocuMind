@@ -29,11 +29,11 @@ export function SourcesList({ citations }: SourcesListProps) {
             <div
               key={c.n}
               onClick={() => openViewer(c.document_id, c.filename, c.page, c.bboxes)}
-              className="p-2 rounded-lg bg-surface-light dark:bg-border-dark/40 hover:bg-primary/5 border border-border-light dark:border-border-dark cursor-pointer transition-colors"
+              className="p-2 rounded-lg bg-surface-light dark:bg-border-dark/40 hover:bg-black/5 dark:hover:bg-white/5 border border-border-light dark:border-border-dark cursor-pointer transition-colors"
             >
               <div className="flex items-center justify-between font-semibold text-text-light dark:text-text-dark">
                 <span className="flex items-center gap-1.5 truncate">
-                  <span className="w-4 h-4 rounded bg-primary/10 text-primary flex items-center justify-center text-[10px]">
+                  <span className="w-4 h-4 rounded bg-black/10 dark:bg-white/10 text-black dark:text-white flex items-center justify-center text-[10px] font-bold">
                     {c.n}
                   </span>
                   <FileText className="w-3.5 h-3.5 text-muted-light dark:text-muted-dark shrink-0" />

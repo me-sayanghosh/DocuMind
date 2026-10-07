@@ -32,7 +32,7 @@ export function ScopePicker({ documents, selectedDocIds, onChange }: ScopePicker
         onClick={() => setOpen(!open)}
         className="flex items-center gap-1.5 px-2.5 py-1 text-xs rounded-lg border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark hover:bg-border-light/50 text-text-light dark:text-text-dark transition-colors"
       >
-        <Filter className="w-3.5 h-3.5 text-primary shrink-0" />
+        <Filter className="w-3.5 h-3.5 text-text-light dark:text-text-dark shrink-0" />
         <span className="truncate max-w-[130px]">
           {selectedDocIds.length === 0
             ? "All Documents"
@@ -50,7 +50,7 @@ export function ScopePicker({ documents, selectedDocIds, onChange }: ScopePicker
               className="w-full flex items-center justify-between p-2 rounded hover:bg-surface-light dark:hover:bg-border-dark text-left"
             >
               <span>Search across all documents</span>
-              {selectedDocIds.length === 0 && <Check className="w-4 h-4 text-primary" />}
+              {selectedDocIds.length === 0 && <Check className="w-4 h-4 text-black dark:text-white" />}
             </button>
 
             <div className="border-t border-border-light dark:border-border-dark my-1" />
@@ -65,7 +65,7 @@ export function ScopePicker({ documents, selectedDocIds, onChange }: ScopePicker
                     className="w-full flex items-center justify-between p-2 rounded hover:bg-surface-light dark:hover:bg-border-dark text-left truncate"
                   >
                     <span className="truncate pr-2">{doc.filename}</span>
-                    {isSelected && <Check className="w-3.5 h-3.5 text-primary shrink-0" />}
+                    {isSelected && <Check className="w-3.5 h-3.5 text-black dark:text-white shrink-0" />}
                   </button>
                 );
               })}

@@ -60,7 +60,7 @@ export function DocumentTable({ documents, onDelete, onReingest }: DocumentTable
             <tr key={doc.id} className="hover:bg-surface-light/50 dark:hover:bg-surface-dark/50 transition-colors">
               <td className="py-3 px-4 font-medium text-text-light dark:text-text-dark max-w-xs truncate">
                 <div className="flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-primary shrink-0" />
+                  <FileText className="w-4 h-4 text-black dark:text-white shrink-0" />
                   <span className="truncate">{doc.filename}</span>
                 </div>
               </td>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Check, Copy, Play, TestTube2 } from "lucide-react";
+import { AlertCircle, Check, Copy, Play, TestTube2, Trash2 } from "lucide-react";
 import { Button } from "../../components/ui/Button";
 import { Dialog } from "../../components/ui/Dialog";
 import { EmptyState } from "../../components/ui/EmptyState";
@@ -62,6 +62,20 @@ export function EvalsPage() {
       setTriggerModalOpen(false);
       queryClient.invalidateQueries({ queryKey: ["evals", wsId] });
       setSelectedRunId(data.run_id);
+    },
+  });
+
+  // 4. Delete run mutation
+  const deleteMutation = useMutation({
+    mutationFn: (runId: string) =>
+      apiClient(`/workspaces/${wsId}/evals/${runId}`, {
+        method: "DELETE",
+      }),
+    onSuccess: (_, deletedId) => {
+      queryClient.invalidateQueries({ queryKey: ["evals", wsId] });
+      if (selectedRunId === deletedId) {
+        setSelectedRunId(null);
+      }
     },
   });
 
@@ -127,28 +141,47 @@ export function EvalsPage() {
             <div className="space-y-1">
               {runs.map((r) => {
                 const isSelected = r.id === activeRunId;
+                const hasError = !!r.summary?.error;
                 return (
-                  <button
+                  <div
                     key={r.id}
-                    onClick={() => setSelectedRunId(r.id)}
-                    className={`w-full p-3 rounded-xl border text-left transition-all ${
+                    className={`group relative flex items-center justify-between p-3 rounded-xl border text-left transition-all ${
                       isSelected
-                        ? "bg-primary/10 border-primary text-primary font-semibold"
-                        : "bg-bg-light dark:bg-surface-dark border-border-light dark:border-border-dark text-text-light dark:text-text-dark hover:border-primary/40"
+                        ? "bg-black/5 dark:bg-white/10 border-black dark:border-white text-black dark:text-white font-semibold"
+                        : "bg-bg-light dark:bg-surface-dark border-border-light dark:border-border-dark text-text-light dark:text-text-dark hover:border-black/40 dark:hover:border-white/40"
                     }`}
                   >
-                    <div className="flex items-center justify-between text-xs">
-                      <span>{r.n_questions} Questions</span>
-                      <span className="opacity-75">{formatDate(r.created_at)}</span>
-                    </div>
-                    <div className="mt-1 text-[11px] text-muted-light dark:text-muted-dark">
-                      {r.finished_at ? (
-                        <span className="text-emerald-600 font-medium">Completed</span>
-                      ) : (
-                        <span className="text-amber-600 font-medium animate-pulse">Running...</span>
-                      )}
-                    </div>
-                  </button>
+                    <button
+                      onClick={() => setSelectedRunId(r.id)}
+                      className="flex-1 text-left min-w-0"
+                    >
+                      <div className="flex items-center justify-between text-xs">
+                        <span>{r.n_questions} Questions</span>
+                        <span className="opacity-75">{formatDate(r.created_at)}</span>
+                      </div>
+                      <div className="mt-1 text-[11px] text-muted-light dark:text-muted-dark">
+                        {r.finished_at ? (
+                          hasError ? (
+                            <span className="text-rose-500 font-medium">Interrupted / Failed</span>
+                          ) : (
+                            <span className="text-emerald-600 font-medium">Completed</span>
+                          )
+                        ) : (
+                          <span className="text-amber-600 font-medium animate-pulse">Running...</span>
+                        )}
+                      </div>
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteMutation.mutate(r.id);
+                      }}
+                      title="Delete evaluation run"
+                      className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-rose-500/10 text-muted-light dark:text-muted-dark hover:text-rose-500 transition-opacity ml-2 shrink-0"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 );
               })}
             </div>
@@ -162,6 +195,16 @@ export function EvalsPage() {
               </div>
             ) : runDetail?.run.summary ? (
               <>
+                {runDetail.run.summary.error && (
+                  <div className="p-4 rounded-xl border border-rose-200 dark:border-rose-900 bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-300 text-sm">
+                    <div className="font-semibold flex items-center gap-2 mb-1">
+                      <AlertCircle className="w-4 h-4" />
+                      <span>Evaluation Notice</span>
+                    </div>
+                    <p>{runDetail.run.summary.error}</p>
+                  </div>
+                )}
+
                 <div className="flex items-center justify-between">
                   <h3 className="text-base font-bold text-text-light dark:text-text-dark">
                     Benchmark Comparison

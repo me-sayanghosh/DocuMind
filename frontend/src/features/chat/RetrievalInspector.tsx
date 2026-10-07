@@ -26,7 +26,7 @@ export function RetrievalInspector({ trace, mode, open, onClose }: RetrievalInsp
       <div className="space-y-6">
         <div className="flex items-center justify-between pb-4 border-b border-border-light dark:border-border-dark">
           <div className="flex items-center gap-2">
-            <Activity className="w-5 h-5 text-primary" />
+            <Activity className="w-5 h-5 text-black dark:text-white" />
             <h3 className="text-base font-semibold text-text-light dark:text-text-dark">
               Retrieval Inspector
             </h3>
@@ -75,7 +75,7 @@ export function RetrievalInspector({ trace, mode, open, onClose }: RetrievalInsp
               <div
                 key={stg.label}
                 className={`flex justify-between items-center py-1 border-b border-border-light/40 dark:border-border-dark/40 ${
-                  stg.bold ? "font-bold text-primary pt-2 border-t" : "text-muted-light dark:text-muted-dark"
+                  stg.bold ? "font-bold text-text-light dark:text-text-dark pt-2 border-t" : "text-muted-light dark:text-muted-dark"
                 }`}
               >
                 <span>{stg.label}</span>

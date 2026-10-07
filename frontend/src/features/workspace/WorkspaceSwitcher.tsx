@@ -67,7 +67,7 @@ export function WorkspaceSwitcher() {
                 >
                   <span className="truncate">{ws.name}</span>
                   {ws.id === currentWorkspace?.id && (
-                    <Check className="w-4 h-4 text-primary shrink-0 ml-2" />
+                    <Check className="w-4 h-4 text-black dark:text-white shrink-0 ml-2" />
                   )}
                 </button>
               ))}
@@ -78,7 +78,7 @@ export function WorkspaceSwitcher() {
                     setIsOpen(false);
                     setCreateModalOpen(true);
                   }}
-                  className="w-full flex items-center px-3 py-2 text-sm text-primary hover:bg-surface-light dark:hover:bg-border-dark font-medium gap-2 transition-colors"
+                  className="w-full flex items-center px-3 py-2 text-sm text-black dark:text-white hover:bg-surface-light dark:hover:bg-border-dark font-medium gap-2 transition-colors"
                 >
                   <Plus className="w-4 h-4" />
                   Create Workspace

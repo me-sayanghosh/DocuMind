@@ -32,7 +32,7 @@ export function FeedbackButtons({
       <button
         onClick={() => handleClick(1)}
         className={`p-1 rounded hover:bg-surface-light dark:hover:bg-border-dark transition-colors ${
-          feedback === 1 ? "text-primary font-bold" : ""
+          feedback === 1 ? "text-black dark:text-white font-bold" : ""
         }`}
         title="Good response"
       >

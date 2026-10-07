@@ -120,7 +120,8 @@ export interface EvalRun {
   created_at: string;
   finished_at?: string | null;
   summary?: {
-    modes: Record<
+    error?: string;
+    modes?: Record<
       string,
       {
         'hit@5': number;

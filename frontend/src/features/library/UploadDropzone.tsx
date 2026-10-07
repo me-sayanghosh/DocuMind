@@ -105,8 +105,8 @@ export function UploadDropzone({ onSuccess }: UploadDropzoneProps) {
         onClick={() => fileInputRef.current?.click()}
         className={`w-full p-8 border-2 border-dashed rounded-xl text-center cursor-pointer transition-colors ${
           isDragging
-            ? "border-primary bg-primary/5"
-            : "border-border-light dark:border-border-dark hover:border-primary/50 bg-surface-light dark:bg-surface-dark"
+            ? "border-black dark:border-white bg-black/5 dark:bg-white/5"
+            : "border-border-light dark:border-border-dark hover:border-black/50 dark:hover:border-white/50 bg-surface-light dark:bg-surface-dark"
         }`}
       >
         <input
@@ -122,7 +122,7 @@ export function UploadDropzone({ onSuccess }: UploadDropzoneProps) {
           }}
         />
 
-        <div className="w-12 h-12 rounded-full bg-primary/10 text-primary mx-auto flex items-center justify-center mb-3">
+        <div className="w-12 h-12 rounded-full bg-black/10 dark:bg-white/10 text-black dark:text-white mx-auto flex items-center justify-center mb-3">
           <Upload className="w-6 h-6" />
         </div>
 

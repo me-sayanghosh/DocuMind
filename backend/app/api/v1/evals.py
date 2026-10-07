@@ -1,4 +1,5 @@
 import asyncio
+from datetime import datetime, timezone
 import json
 import uuid
 from typing import List
@@ -6,6 +7,7 @@ from fastapi import APIRouter, Depends, Query, Response, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
+import structlog
 
 from app.core.deps import WorkspaceContext, get_workspace_ctx
 from app.core.errors import NotFoundException
@@ -14,6 +16,9 @@ from app.evals.report import generate_markdown_report
 from app.evals.runner import eval_runner
 from app.models.eval import EvalQuestion, EvalResult, EvalRun
 from app.schemas.eval import EvalRunCreate, EvalRunDetail, EvalRunRead
+
+logger = structlog.get_logger()
+eval_background_tasks = set()
 
 router = APIRouter(prefix="/workspaces/{workspace_id}/evals", tags=["evals"])
 
@@ -38,12 +43,17 @@ async def create_eval_run(
     await db.commit()
     await db.refresh(run)
 
-    # Launch evaluation run asynchronously
+    # Launch evaluation run asynchronously with reference retention
     async def run_async():
-        async with async_session_factory() as run_db:
-            await eval_runner.execute_run(run_db, run.id)
+        try:
+            async with async_session_factory() as run_db:
+                await eval_runner.execute_run(run_db, run.id)
+        except Exception as e:
+            await logger.aerror("Evaluation run failed unexpectedly", run_id=str(run.id), error=str(e))
 
-    asyncio.create_task(run_async())
+    task = asyncio.create_task(run_async())
+    eval_background_tasks.add(task)
+    task.add_done_callback(eval_background_tasks.discard)
 
     return {"run_id": str(run.id), "status": "queued"}
 
@@ -59,7 +69,26 @@ async def list_eval_runs(
         .order_by(EvalRun.created_at.desc())
     )
     res = await db.execute(stmt)
-    return [EvalRunRead.model_validate(r) for r in res.scalars().all()]
+    runs = list(res.scalars().all())
+
+    # Automatically mark orphaned runs (> 10m old with no finished_at) as timed out
+    now = datetime.now(timezone.utc)
+    updated = False
+    for r in runs:
+        if r.finished_at is None:
+            created = r.created_at
+            if created.tzinfo is None:
+                created = created.replace(tzinfo=timezone.utc)
+            if (now - created).total_seconds() > 600:
+                r.finished_at = now
+                if not r.summary:
+                    r.summary = {"error": "Evaluation timed out or was interrupted.", "modes": {}}
+                updated = True
+
+    if updated:
+        await db.commit()
+
+    return [EvalRunRead.model_validate(r) for r in runs]
 
 
 @router.get("/{run_id}", response_model=EvalRunDetail)
@@ -135,3 +164,18 @@ async def export_eval_run(
         media_type="text/markdown",
         headers={"Content-Disposition": f'attachment; filename="eval_run_{run.id}.md"'},
     )
+
+
+@router.delete("/{run_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_eval_run(
+    run_id: uuid.UUID,
+    ctx: WorkspaceContext = Depends(get_workspace_ctx),
+    db: AsyncSession = Depends(get_db),
+):
+    stmt = select(EvalRun).where(EvalRun.id == run_id, EvalRun.workspace_id == ctx.workspace.id)
+    res = await db.execute(stmt)
+    run = res.scalar_one_or_none()
+    if not run:
+        raise NotFoundException("Evaluation run not found")
+    await db.delete(run)
+    await db.commit()

@@ -37,7 +37,7 @@ export function FailureBrowser({ results }: FailureBrowserProps) {
               type="checkbox"
               checked={onlyMisses}
               onChange={(e) => setOnlyMisses(e.target.checked)}
-              className="rounded text-primary focus:ring-primary"
+              className="rounded text-black dark:text-white focus:ring-black dark:focus:ring-white accent-black dark:accent-white"
             />
             <span>Show retrieval misses only</span>
           </label>
