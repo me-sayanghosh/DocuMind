@@ -1,10 +1,12 @@
 import { MessageSquare, Plus, Trash2, X } from "lucide-react";
 import { Button } from "../../components/ui/Button";
+import { SidebarSkeleton } from "../../components/ui/Skeleton";
 import { cn } from "../../lib/cn";
 import { Conversation } from "../../types/api";
 
 export interface ConversationSidebarProps {
   conversations: Conversation[];
+  isLoading?: boolean;
   activeId?: string;
   onSelect: (id: string) => void;
   onNewChat: () => void;
@@ -15,6 +17,7 @@ export interface ConversationSidebarProps {
 
 export function ConversationSidebar({
   conversations,
+  isLoading,
   activeId,
   onSelect,
   onNewChat,
@@ -57,11 +60,13 @@ export function ConversationSidebar({
       </div>
 
       <div className="flex-1 overflow-y-auto p-2 space-y-1">
-        {conversations.length === 0 && (
+        {isLoading ? (
+          <SidebarSkeleton items={6} />
+        ) : conversations.length === 0 ? (
           <div className="text-center py-8 text-xs text-muted-light dark:text-muted-dark">
             No chats yet. Start a new conversation!
           </div>
-        )}
+        ) : (
 
         {conversations.map((conv) => {
           const isActive = conv.id === activeId;

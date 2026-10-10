@@ -1,4 +1,4 @@
-import { Spinner } from "../../components/ui/Spinner";
+import { TableSkeleton } from "../../components/ui/Skeleton";
 import { useDocuments } from "../../hooks/useDocuments";
 import { DocumentTable } from "./DocumentTable";
 import { UploadDropzone } from "./UploadDropzone";
@@ -26,9 +26,7 @@ export function LibraryPage() {
           </div>
 
           {isLoading ? (
-            <div className="flex justify-center p-12">
-              <Spinner className="w-8 h-8" />
-            </div>
+            <TableSkeleton rows={5} columns={5} />
           ) : (
             <DocumentTable
               documents={documents}
