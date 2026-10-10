@@ -17,7 +17,7 @@ import { Button } from "../../components/ui/Button";
 import { useAuthStore } from "../../lib/auth";
 
 export function HomePage() {
-  const { user, accessToken, currentWorkspace } = useAuthStore();
+  const { user, accessToken } = useAuthStore();
   const isAuthenticated = Boolean(user && accessToken);
   const [darkMode, setDarkMode] = useState(
     typeof document !== "undefined" && document.documentElement.classList.contains("dark")
@@ -113,23 +113,6 @@ export function HomePage() {
       {/* 2. Hero Section */}
       <section className="relative overflow-hidden pt-12 pb-16 sm:pt-20 sm:pb-24 border-b border-border-light dark:border-border-dark bg-gradient-to-b from-surface-light/40 to-transparent dark:from-surface-dark/40 dark:to-transparent">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          {isAuthenticated && (
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark text-xs mb-6 text-muted-light dark:text-muted-dark animate-fade-in">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Signed in as <strong className="text-text-light dark:text-text-dark">{user?.email}</strong></span>
-              {currentWorkspace && (
-                <span className="border-l border-border-light dark:border-border-dark pl-2 ml-1 text-text-light dark:text-text-dark font-medium">
-                  {currentWorkspace.name}
-                </span>
-              )}
-            </div>
-          )}
-
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/5 dark:bg-white/10 text-xs font-semibold text-text-light dark:text-text-dark mb-6">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-            Zero-Hallucination Grounding with Sentence-Level Citations
-          </div>
-
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-text-light dark:text-text-dark max-w-4xl mx-auto leading-tight sm:leading-tight">
             Intelligent Document Intelligence with{" "}
             <span className="bg-gradient-to-r from-neutral-900 via-neutral-700 to-neutral-500 dark:from-white dark:via-neutral-200 dark:to-neutral-400 bg-clip-text text-transparent">
