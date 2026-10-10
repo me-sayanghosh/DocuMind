@@ -33,7 +33,6 @@ class EmailService:
 
     def _send_via_smtp_sync(
         self,
-        to_email: str,
         msg: MIMEMultipart,
     ) -> None:
         """Synchronous SMTP delivery executed in threadpool."""
@@ -51,10 +50,8 @@ class EmailService:
 
             server.send_message(msg)
         finally:
-            try:
+            with contextlib.suppress(Exception):
                 server.quit()
-            except Exception:
-                pass
 
     async def _send_via_resend(
         self,

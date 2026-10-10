@@ -22,24 +22,16 @@ export function Composer({
   placeholder,
   text: controlledText,
   onTextChange,
-  mode: controlledMode,
-  onModeChange,
+  mode = "hybrid_rerank",
 }: ComposerProps) {
   const [internalText, setInternalText] = useState("");
-  const [internalMode, setInternalMode] = useState("hybrid_rerank");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const text = controlledText !== undefined ? controlledText : internalText;
-  const mode = controlledMode !== undefined ? controlledMode : internalMode;
 
   const handleTextChange = (newVal: string) => {
     if (onTextChange) onTextChange(newVal);
     if (controlledText === undefined) setInternalText(newVal);
-  };
-
-  const handleModeChange = (newVal: string) => {
-    if (onModeChange) onModeChange(newVal);
-    if (controlledMode === undefined) setInternalMode(newVal);
   };
 
   useEffect(() => {

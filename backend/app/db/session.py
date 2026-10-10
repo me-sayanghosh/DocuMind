@@ -1,6 +1,7 @@
+import contextlib
 from typing import AsyncGenerator
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from app.core.config import settings
 
@@ -36,10 +37,8 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 async def set_db_user_context(session: AsyncSession, user_id: str) -> None:
     """Set transaction-local app.user_id for Postgres RLS defense in depth."""
     if not is_sqlite:
-        try:
+        with contextlib.suppress(Exception):
             await session.execute(
                 text("SET LOCAL app.user_id = :user_id"),
                 {"user_id": str(user_id)},
             )
-        except Exception:
-            pass

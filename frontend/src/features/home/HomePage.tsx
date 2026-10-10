@@ -4,19 +4,14 @@ import {
   ArrowRight,
   BookOpen,
   CheckCircle2,
-  Cpu,
   FileCheck2,
-  FileText,
-  Layers,
   MessageSquare,
   Moon,
   Play,
   Search,
   ShieldCheck,
-  Sparkles,
   Sun,
   TestTube2,
-  Zap,
 } from "lucide-react";
 import { Button } from "../../components/ui/Button";
 import { useAuthStore } from "../../lib/auth";
@@ -50,10 +45,6 @@ export function HomePage() {
               </div>
               <span className="font-bold text-lg tracking-tight">DocuMind</span>
             </Link>
-            <span className="hidden sm:inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark text-muted-light dark:text-muted-dark">
-              <Sparkles className="w-3 h-3 text-amber-500" />
-              v1.0 Verifiable RAG
-            </span>
           </div>
 
           <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-muted-light dark:text-muted-dark">

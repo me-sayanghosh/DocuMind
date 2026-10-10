@@ -18,8 +18,7 @@ class CompatibleVector(TypeDecorator):
     def load_dialect_impl(self, dialect):
         if dialect.name == "postgresql":
             return dialect.type_descriptor(Vector(self.dim))
-        else:
-            return dialect.type_descriptor(TEXT())
+        return dialect.type_descriptor(TEXT())
 
     def process_bind_param(self, value: Optional[List[float]], dialect):
         if value is None:

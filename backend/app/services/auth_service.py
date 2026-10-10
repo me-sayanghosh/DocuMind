@@ -138,22 +138,22 @@ class AuthService:
                 )
                 await db.commit()
                 raise UnauthorizedException("Compromised session detected. All sessions revoked. Please log in again.")
-            else:
-                # Inside grace period: issue a new valid pair
-                new_access_token = create_access_token(subject=str(token_record.user_id))
-                new_raw_refresh = generate_refresh_token()
-                new_token_hash = hash_refresh_token(new_raw_refresh)
-                new_expires_at = now + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
 
-                new_record = RefreshToken(
-                    user_id=token_record.user_id,
-                    token_hash=new_token_hash,
-                    expires_at=new_expires_at,
-                    user_agent=user_agent[:500] if user_agent else None,
-                )
-                db.add(new_record)
-                await db.commit()
-                return new_access_token, new_raw_refresh
+            # Inside grace period: issue a new valid pair
+            new_access_token = create_access_token(subject=str(token_record.user_id))
+            new_raw_refresh = generate_refresh_token()
+            new_token_hash = hash_refresh_token(new_raw_refresh)
+            new_expires_at = now + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
+
+            new_record = RefreshToken(
+                user_id=token_record.user_id,
+                token_hash=new_token_hash,
+                expires_at=new_expires_at,
+                user_agent=user_agent[:500] if user_agent else None,
+            )
+            db.add(new_record)
+            await db.commit()
+            return new_access_token, new_raw_refresh
 
         if token_record.expires_at < now:
             raise UnauthorizedException("Refresh token has expired")

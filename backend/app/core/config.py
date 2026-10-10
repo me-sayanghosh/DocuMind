@@ -55,11 +55,13 @@ class Settings(BaseSettings):
             if v.startswith("[") and v.endswith("]"):
                 import json
                 try:
-                    return json.loads(v)
+                    res = json.loads(v)
+                    if isinstance(res, list):
+                        return res
                 except Exception:
                     pass
             return [i.strip() for i in v.split(",") if i.strip()]
-        elif isinstance(v, list):
+        if isinstance(v, list):
             return v
         return []
 
