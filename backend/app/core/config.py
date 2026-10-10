@@ -1,4 +1,5 @@
-from typing import List, Union
+import os
+from typing import Any, List, Union
 
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -16,7 +17,7 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "INFO"
 
     # Database
-    DATABASE_URL: str = "postgresql+asyncpg://postgres:postgrespassword@localhost:5432/docchat"
+    DATABASE_URL: str = "sqlite+aiosqlite:///./docchat.db"
 
     # Redis
     REDIS_URL: str = "redis://localhost:6379/0"
@@ -48,6 +49,38 @@ class Settings(BaseSettings):
         "http://127.0.0.1:5173",
         "http://127.0.0.1:3000",
     ]
+
+    @field_validator("DATABASE_URL", mode="before")
+    @classmethod
+    def resolve_database_url(cls, v: Any) -> Any:
+        backend_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        default_sqlite_path = os.path.join(backend_dir, "docchat.db")
+
+        if isinstance(v, str):
+            # If pointing to localhost postgres, check if postgres is actually listening
+            if ("localhost:5432" in v or "127.0.0.1:5432" in v) and os.path.exists(default_sqlite_path):
+                import socket
+
+                try:
+                    with socket.create_connection(("127.0.0.1", 5432), timeout=0.1):
+                        pass
+                except (OSError, ConnectionRefusedError, socket.timeout):
+                    # Postgres is not running locally; fallback cleanly to sqlite
+                    return f"sqlite+aiosqlite:///{default_sqlite_path}"
+
+            # If sqlite path is relative, resolve it to an absolute path
+            if ("sqlite" in v) and (":///" in v):
+                scheme, path = v.split(":///", 1)
+                if not os.path.isabs(path) and not path.startswith(":memory:"):
+                    clean_path = path[2:] if path.startswith("./") else path
+                    if os.path.exists(clean_path):
+                        return f"{scheme}:///{os.path.abspath(clean_path)}"
+                    backend_db = os.path.join(backend_dir, clean_path)
+                    if os.path.exists(backend_db):
+                        return f"{scheme}:///{backend_db}"
+                    return f"{scheme}:///{os.path.abspath(clean_path)}"
+
+        return v
 
     @field_validator("CORS_ORIGINS", mode="before")
     @classmethod

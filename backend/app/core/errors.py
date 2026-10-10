@@ -169,3 +169,23 @@ async def validation_exception_handler(
         code="VALIDATION_ERROR",
         request_id=request_id,
     )
+
+
+async def generic_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    request_id = getattr(request.state, "request_id", "")
+    err_str = str(exc)
+    if "Connection refused" in err_str or isinstance(exc, (ConnectionRefusedError, OSError)):
+        return make_problem_response(
+            status=503,
+            title="Database Unavailable",
+            detail="Database connection failed. If running locally without PostgreSQL or Docker, set DATABASE_URL=sqlite+aiosqlite:///./docchat.db in .env.",
+            code="DATABASE_UNAVAILABLE",
+            request_id=request_id,
+        )
+    return make_problem_response(
+        status=500,
+        title="Internal Server Error",
+        detail="An unexpected internal server error occurred",
+        code="INTERNAL_ERROR",
+        request_id=request_id,
+    )

@@ -12,6 +12,7 @@ from app.core.config import settings
 from app.core.errors import (
     AppException,
     app_exception_handler,
+    generic_exception_handler,
     http_exception_handler,
     validation_exception_handler,
 )
@@ -79,6 +80,7 @@ def create_app() -> FastAPI:
     app.add_exception_handler(AppException, app_exception_handler)
     app.add_exception_handler(StarletteHTTPException, http_exception_handler)
     app.add_exception_handler(RequestValidationError, validation_exception_handler)
+    app.add_exception_handler(Exception, generic_exception_handler)
 
     # Routers
     app.include_router(api_v1_router)
