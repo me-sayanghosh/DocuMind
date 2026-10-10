@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { Spinner } from "../../components/ui/Spinner";
+import { PageSkeleton } from "../../components/ui/Skeleton";
 import { apiClient, silentRefreshToken } from "../../lib/apiClient";
 import { isTokenExpired, useAuthStore } from "../../lib/auth";
 import { MeResponse } from "../../types/api";
@@ -51,11 +51,7 @@ export function RequireAuth() {
   }, [setAuth, logout]);
 
   if (checking) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-bg-light dark:bg-bg-dark">
-        <Spinner className="w-8 h-8" />
-      </div>
-    );
+    return <PageSkeleton />;
   }
 
   if (!accessToken || !user) {

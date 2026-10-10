@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Spinner } from "../../components/ui/Spinner";
+import { PdfViewerSkeleton } from "../../components/ui/Skeleton";
 import { useViewerStore } from "../../hooks/useViewerStore";
 import { useAuthStore } from "../../lib/auth";
 import { HighlightLayer } from "./HighlightLayer";
@@ -65,6 +65,10 @@ export function PdfViewer() {
 
   if (!open) return null;
 
+  if (loading && !blobUrl) {
+    return <PdfViewerSkeleton />;
+  }
+
   return (
     <div className="h-full flex flex-col bg-surface-light dark:bg-bg-dark border-l border-border-light dark:border-border-dark overflow-hidden">
       <ViewerToolbar
@@ -83,7 +87,7 @@ export function PdfViewer() {
       >
         {loading && (
           <div className="flex flex-col items-center gap-2">
-            <Spinner className="w-8 h-8" />
+            <div className="w-7 h-7 rounded-full border-2 border-border-light dark:border-border-dark border-t-black dark:border-t-white animate-spin" />
             <p className="text-xs text-muted-light dark:text-muted-dark">Loading PDF...</p>
           </div>
         )}

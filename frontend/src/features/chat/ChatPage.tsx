@@ -325,7 +325,9 @@ export function ChatPage() {
       {/* 3. Right Split Pane: PDF Viewer (Desktop >= md) */}
       {viewerOpen && (
         <div className="w-[45%] max-w-2xl h-full hidden md:block border-l border-border-light dark:border-border-dark shrink-0">
-          <PdfViewer />
+          <Suspense fallback={<PdfViewerSkeleton />}>
+            <PdfViewer />
+          </Suspense>
         </div>
       )}
 
@@ -345,7 +347,9 @@ export function ChatPage() {
             </button>
           </div>
           <div className="flex-1 overflow-hidden">
-            <PdfViewer />
+            <Suspense fallback={<PdfViewerSkeleton />}>
+              <PdfViewer />
+            </Suspense>
           </div>
         </div>
       )}

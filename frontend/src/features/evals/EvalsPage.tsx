@@ -4,7 +4,7 @@ import { AlertCircle, Check, Copy, Play, TestTube2, Trash2 } from "lucide-react"
 import { Button } from "../../components/ui/Button";
 import { Dialog } from "../../components/ui/Dialog";
 import { EmptyState } from "../../components/ui/EmptyState";
-import { Spinner } from "../../components/ui/Spinner";
+import { CardSkeleton, SidebarSkeleton, TableSkeleton } from "../../components/ui/Skeleton";
 import { apiClient } from "../../lib/apiClient";
 import { useAuthStore } from "../../lib/auth";
 import { formatDate } from "../../lib/format";
@@ -117,8 +117,18 @@ export function EvalsPage() {
       </div>
 
       {runsLoading ? (
-        <div className="flex justify-center p-12">
-          <Spinner className="w-8 h-8" />
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          <div className="space-y-2 lg:col-span-1">
+            <SidebarSkeleton items={5} />
+          </div>
+          <div className="lg:col-span-3 space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <CardSkeleton />
+              <CardSkeleton />
+              <CardSkeleton />
+            </div>
+            <TableSkeleton rows={4} columns={5} />
+          </div>
         </div>
       ) : runs.length === 0 ? (
         <EmptyState
@@ -191,8 +201,13 @@ export function EvalsPage() {
           {/* Run Results View */}
           <div className="lg:col-span-3 space-y-6">
             {detailLoading ? (
-              <div className="flex justify-center p-12">
-                <Spinner className="w-8 h-8" />
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <CardSkeleton />
+                  <CardSkeleton />
+                  <CardSkeleton />
+                </div>
+                <TableSkeleton rows={4} columns={5} />
               </div>
             ) : runDetail?.run.summary ? (
               <>
