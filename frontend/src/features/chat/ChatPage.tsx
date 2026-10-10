@@ -1,23 +1,30 @@
-import { useState } from "react";
+import { Suspense, lazy, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { MessageSquare, Sparkles, X } from "lucide-react";
+import { MessageSkeleton, PdfViewerSkeleton } from "../../components/ui/Skeleton";
 import { Spinner } from "../../components/ui/Spinner";
 import { useChatStream } from "../../hooks/useChatStream";
 import { useConversationMessages, useConversations } from "../../hooks/useConversations";
 import { useDocuments } from "../../hooks/useDocuments";
 import { useViewerStore } from "../../hooks/useViewerStore";
-import { PdfViewer } from "../viewer/PdfViewer";
 import { Composer } from "./Composer";
 import { ConversationSidebar } from "./ConversationSidebar";
 import { MessageList } from "./MessageList";
 import { ScopePicker } from "./ScopePicker";
+
+const PdfViewer = lazy(() => import("../viewer/PdfViewer").then((m) => ({ default: m.PdfViewer })));
 
 export function ChatPage() {
   const { conversationId } = useParams<{ conversationId?: string }>();
   const navigate = useNavigate();
 
   const { documents } = useDocuments();
-  const { conversations, createConversation, deleteConversation } = useConversations();
+  const {
+    conversations,
+    isLoading: conversationsLoading,
+    createConversation,
+    deleteConversation,
+  } = useConversations();
   const { messages, isLoading: messagesLoading, submitFeedback } = useConversationMessages(conversationId);
   const { send, stop, state, draft, sources, citations, errorMessage } = useChatStream(conversationId);
 
@@ -114,6 +121,7 @@ export function ChatPage() {
       <div className="hidden md:flex h-full shrink-0">
         <ConversationSidebar
           conversations={conversations}
+          isLoading={conversationsLoading}
           activeId={conversationId}
           onSelect={handleSelectConv}
           onNewChat={handleNewChat}
@@ -131,6 +139,7 @@ export function ChatPage() {
           <div className="relative w-72 max-w-[85vw] h-full z-10 shadow-2xl bg-surface-light dark:bg-surface-dark">
             <ConversationSidebar
               conversations={conversations}
+              isLoading={conversationsLoading}
               activeId={conversationId}
               onSelect={handleSelectConv}
               onNewChat={handleNewChat}
@@ -235,9 +244,7 @@ export function ChatPage() {
               )}
             </div>
           ) : messagesLoading ? (
-            <div className="flex-1 flex items-center justify-center">
-              <Spinner className="w-8 h-8 text-black dark:text-white" />
-            </div>
+            <MessageSkeleton count={3} />
           ) : messages.length === 0 && !draft ? (
             <div className="flex-1 overflow-y-auto flex flex-col items-center justify-center p-4 sm:p-8 text-center max-w-lg mx-auto">
               <div className="w-12 h-12 rounded-full bg-black/5 text-black dark:bg-white/10 dark:text-white flex items-center justify-center mb-4">

@@ -121,7 +121,7 @@ export function HomePage() {
           </h1>
 
           <p className="mt-5 sm:mt-6 text-sm sm:text-lg text-muted-light dark:text-muted-dark max-w-2xl mx-auto leading-relaxed">
-            Eliminate AI hallucinations. DocuMind fuses <strong>pgvector dense embeddings</strong>, <strong>Postgres BM25 lexical search</strong>, and <strong>cross-encoder reranking</strong> with interactive PDF page highlights.
+            Eliminate AI hallucinations. DocuMind delivers <strong>verifiable, source-grounded answers</strong> with <strong>interactive page highlights</strong> and <strong>sentence-level citations</strong> across all your documents.
           </p>
 
           <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 max-w-md mx-auto sm:max-w-none">
