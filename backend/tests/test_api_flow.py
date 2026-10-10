@@ -42,14 +42,18 @@ async def test_end_to_end_api_flow(client: AsyncClient):
     doc_id = upload_res.json()["document"]["id"]
 
     # 4. Ingest document via reingest / direct process
+    import uuid
+
     from app.db.session import async_session_factory
     from app.services.document_service import document_service
-    import uuid
+
     async with async_session_factory() as db:
         await document_service.process_document_ingestion(db, uuid.UUID(doc_id))
 
     # Verify document status is ready
-    doc_detail = await client.get(f"/api/v1/workspaces/{workspace_id}/documents/{doc_id}", headers=headers)
+    doc_detail = await client.get(
+        f"/api/v1/workspaces/{workspace_id}/documents/{doc_id}", headers=headers
+    )
     assert doc_detail.status_code == 200
     assert doc_detail.json()["status"] == "ready"
     assert doc_detail.json()["chunks_total"] >= 1
@@ -91,5 +95,7 @@ async def test_end_to_end_api_flow(client: AsyncClient):
     assert fb_res.json()["feedback"] == 1
 
     # 9. Delete document (cascades)
-    del_res = await client.delete(f"/api/v1/workspaces/{workspace_id}/documents/{doc_id}", headers=headers)
+    del_res = await client.delete(
+        f"/api/v1/workspaces/{workspace_id}/documents/{doc_id}", headers=headers
+    )
     assert del_res.status_code == 204

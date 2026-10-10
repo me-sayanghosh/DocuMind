@@ -1,4 +1,5 @@
 from typing import List, Union
+
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -54,6 +55,7 @@ class Settings(BaseSettings):
         if isinstance(v, str):
             if v.startswith("[") and v.endswith("]"):
                 import json
+
                 try:
                     res = json.loads(v)
                     if isinstance(res, list):

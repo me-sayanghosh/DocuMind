@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
 from typing import Optional, Tuple
+
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -137,7 +138,9 @@ class AuthService:
                     .values(revoked_at=now)
                 )
                 await db.commit()
-                raise UnauthorizedException("Compromised session detected. All sessions revoked. Please log in again.")
+                raise UnauthorizedException(
+                    "Compromised session detected. All sessions revoked. Please log in again."
+                )
 
             # Inside grace period: issue a new valid pair
             new_access_token = create_access_token(subject=str(token_record.user_id))

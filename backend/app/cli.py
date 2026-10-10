@@ -1,7 +1,8 @@
 import asyncio
 import sys
-from pathlib import Path
 import uuid
+from pathlib import Path
+
 import typer
 from sqlalchemy import select
 
@@ -21,6 +22,7 @@ cli = typer.Typer(help="DocChat CLI administration and evaluation utility")
 @cli.command()
 def make_admin(email: str):
     """Grant admin role to a user by email."""
+
     async def _make():
         async with async_session_factory() as db:
             stmt = select(User).where(User.email == email.strip().lower())
@@ -40,17 +42,20 @@ def make_admin(email: str):
 @cli.command()
 def eval(workspace_id: str = ""):
     """Run evaluation harness on a workspace."""
+
     async def _eval():
+        from app.evals.report import generate_markdown_report
         from app.evals.runner import eval_runner
         from app.models.eval import EvalRun
-        from app.evals.report import generate_markdown_report
 
         async with async_session_factory() as db:
             if not workspace_id:
                 ws_res = await db.execute(select(Workspace).limit(1))
                 ws = ws_res.scalar_one_or_none()
                 if not ws:
-                    typer.echo("Error: No workspace found. Please seed or create one first.", err=True)
+                    typer.echo(
+                        "Error: No workspace found. Please seed or create one first.", err=True
+                    )
                     raise typer.Exit(code=1)
                 ws_id = ws.id
                 user_id = ws.owner_id
@@ -71,7 +76,9 @@ def eval(workspace_id: str = ""):
 
             typer.echo(f"Starting evaluation run {run.id} on workspace {ws_id}...")
             finished_run = await eval_runner.execute_run(db, run.id)
-            report = generate_markdown_report(finished_run.summary, n_questions=finished_run.n_questions)
+            report = generate_markdown_report(
+                finished_run.summary, n_questions=finished_run.n_questions
+            )
             typer.echo("\n" + report)
 
     asyncio.run(_eval())
@@ -80,6 +87,7 @@ def eval(workspace_id: str = ""):
 @cli.command()
 def seed_demo(email: str = "demo@example.com", password: str = "DemoPassword123!"):
     """Seed demo user, workspace, and sample contract PDF."""
+
     async def _seed():
         # Ensure tables
         async with engine.begin() as conn:
@@ -98,6 +106,7 @@ def seed_demo(email: str = "demo@example.com", password: str = "DemoPassword123!
 
             # Create a synthetic PDF contract with fitz
             import fitz
+
             doc = fitz.open()
             page = doc.new_page(width=595, height=842)  # A4
 
@@ -133,7 +142,9 @@ This Agreement shall be governed by and construed in accordance with the laws of
 
             # Process ingestion immediately
             await document_service.process_document_ingestion(db, uploaded_doc.id)
-            typer.echo(f"Ingestion complete: status={uploaded_doc.status}, chunks={uploaded_doc.chunks_done}")
+            typer.echo(
+                f"Ingestion complete: status={uploaded_doc.status}, chunks={uploaded_doc.chunks_done}"
+            )
 
     asyncio.run(_seed())
 

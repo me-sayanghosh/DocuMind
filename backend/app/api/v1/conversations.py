@@ -1,5 +1,6 @@
 import uuid
 from typing import List
+
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -9,7 +10,13 @@ from app.db.session import async_session_factory, get_db
 from app.models.user import User
 from app.rag.pipeline import RagPipeline
 from app.schemas.conversation import ConversationCreate, ConversationRead, ConversationUpdate
-from app.schemas.message import CitationRead, FeedbackRequest, MessageRead, MessageTraceRead, SendMessageRequest
+from app.schemas.message import (
+    CitationRead,
+    FeedbackRequest,
+    MessageRead,
+    MessageTraceRead,
+    SendMessageRequest,
+)
 from app.services.conversation_service import conversation_service
 from app.services.quota_service import quota_service
 
@@ -71,7 +78,9 @@ async def delete_conversation(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    await conversation_service.delete_conversation(db, conversation_id=conversation_id, user_id=user.id)
+    await conversation_service.delete_conversation(
+        db, conversation_id=conversation_id, user_id=user.id
+    )
 
 
 @router.get("/conversations/{conversation_id}/messages", response_model=List[MessageRead])
@@ -80,7 +89,9 @@ async def get_conversation_messages(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    msgs = await conversation_service.get_messages(db, conversation_id=conversation_id, user_id=user.id)
+    msgs = await conversation_service.get_messages(
+        db, conversation_id=conversation_id, user_id=user.id
+    )
     out: List[MessageRead] = []
     for m in msgs:
         citations_read = [
@@ -96,9 +107,7 @@ async def get_conversation_messages(
             )
             for c in m.citations
         ]
-        trace_read = (
-            MessageTraceRead.model_validate(m.trace) if m.trace else None
-        )
+        trace_read = MessageTraceRead.model_validate(m.trace) if m.trace else None
         out.append(
             MessageRead(
                 id=m.id,
@@ -158,7 +167,9 @@ async def submit_feedback(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    msg = await conversation_service.record_feedback(db, message_id=message_id, user_id=user.id, value=data.value)
+    msg = await conversation_service.record_feedback(
+        db, message_id=message_id, user_id=user.id, value=data.value
+    )
     return {"status": "success", "message_id": str(msg.id), "feedback": msg.feedback}
 
 

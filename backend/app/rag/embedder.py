@@ -2,17 +2,16 @@ import asyncio
 import hashlib
 import math
 from typing import List, Optional, Protocol
+
 from app.core.config import settings
 
 
 class Embedder(Protocol):
     dim: int
 
-    async def embed_documents(self, texts: List[str]) -> List[List[float]]:
-        ...
+    async def embed_documents(self, texts: List[str]) -> List[List[float]]: ...
 
-    async def embed_query(self, text: str) -> List[float]:
-        ...
+    async def embed_query(self, text: str) -> List[float]: ...
 
 
 class HashEmbedder:
@@ -67,6 +66,7 @@ class SentenceTransformersEmbedder:
     def _get_model(self):
         if self._model is None:
             from sentence_transformers import SentenceTransformer
+
             self._model = SentenceTransformer(self.model_name)
         return self._model
 

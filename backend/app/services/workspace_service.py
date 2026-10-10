@@ -1,5 +1,6 @@
 import uuid
 from typing import List, Optional, Tuple
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -23,9 +24,7 @@ class WorkspaceService:
         res = await db.execute(stmt)
         return [(ws, role) for ws, role in res.all()]
 
-    async def create_workspace(
-        self, db: AsyncSession, user_id: uuid.UUID, name: str
-    ) -> Workspace:
+    async def create_workspace(self, db: AsyncSession, user_id: uuid.UUID, name: str) -> Workspace:
         ws = Workspace(
             name=name.strip(),
             owner_id=user_id,

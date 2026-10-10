@@ -1,13 +1,15 @@
 import json
 from typing import Any, List, Optional
-from sqlalchemy.types import TypeDecorator, TEXT
+
 from pgvector.sqlalchemy import Vector
+from sqlalchemy.types import TEXT, TypeDecorator
 
 
 class CompatibleVector(TypeDecorator):
     """
     Uses pgvector's Vector(dim) on PostgreSQL, and JSON text on SQLite.
     """
+
     impl = TEXT
     cache_ok = True
 

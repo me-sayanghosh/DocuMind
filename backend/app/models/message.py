@@ -1,7 +1,18 @@
 import uuid
 from datetime import datetime, timezone
 from typing import Optional
-from sqlalchemy import DateTime, Float, ForeignKey, Index, Integer, PrimaryKeyConstraint, SmallInteger, String, Text
+
+from sqlalchemy import (
+    DateTime,
+    Float,
+    ForeignKey,
+    Index,
+    Integer,
+    PrimaryKeyConstraint,
+    SmallInteger,
+    String,
+    Text,
+)
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -26,7 +37,9 @@ class Message(Base):
     content: Mapped[str] = mapped_column(Text, nullable=False)
     standalone_query: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     retrieval_mode: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
-    status: Mapped[str] = mapped_column(String(50), default="complete", nullable=False)  # 'complete', 'refused', 'error', 'stopped'
+    status: Mapped[str] = mapped_column(
+        String(50), default="complete", nullable=False
+    )  # 'complete', 'refused', 'error', 'stopped'
     feedback: Mapped[Optional[int]] = mapped_column(SmallInteger, nullable=True)  # 1 or -1
     tokens_in: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     tokens_out: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
@@ -36,13 +49,18 @@ class Message(Base):
         nullable=False,
     )
 
-    __table_args__ = (
-        Index("messages_conv_idx", "conversation_id", "created_at"),
-    )
+    __table_args__ = (Index("messages_conv_idx", "conversation_id", "created_at"),)
 
     conversation = relationship("Conversation", back_populates="messages")
-    citations = relationship("MessageCitation", back_populates="message", cascade="all, delete-orphan", order_by="MessageCitation.ordinal")
-    trace = relationship("QueryTrace", back_populates="message", uselist=False, cascade="all, delete-orphan")
+    citations = relationship(
+        "MessageCitation",
+        back_populates="message",
+        cascade="all, delete-orphan",
+        order_by="MessageCitation.ordinal",
+    )
+    trace = relationship(
+        "QueryTrace", back_populates="message", uselist=False, cascade="all, delete-orphan"
+    )
 
 
 class MessageCitation(Base):
@@ -64,9 +82,7 @@ class MessageCitation(Base):
     snippet: Mapped[str] = mapped_column(Text, nullable=False)
     rerank_score: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
 
-    __table_args__ = (
-        PrimaryKeyConstraint("message_id", "ordinal"),
-    )
+    __table_args__ = (PrimaryKeyConstraint("message_id", "ordinal"),)
 
     message = relationship("Message", back_populates="citations")
     chunk = relationship("Chunk")

@@ -1,5 +1,6 @@
 import contextlib
 from typing import AsyncGenerator
+
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
@@ -9,11 +10,13 @@ is_sqlite = settings.DATABASE_URL.startswith("sqlite")
 
 engine_kwargs = {"echo": False}
 if not is_sqlite:
-    engine_kwargs.update({
-        "pool_size": 10,
-        "max_overflow": 10,
-        "pool_pre_ping": True,
-    })
+    engine_kwargs.update(
+        {
+            "pool_size": 10,
+            "max_overflow": 10,
+            "pool_pre_ping": True,
+        }
+    )
 
 engine = create_async_engine(settings.DATABASE_URL, **engine_kwargs)
 

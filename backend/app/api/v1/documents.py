@@ -2,6 +2,7 @@ import asyncio
 import json
 import uuid
 from typing import List
+
 from fastapi import APIRouter, Depends, File, UploadFile, status
 from fastapi.responses import Response, StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -64,7 +65,9 @@ async def get_document(
     ctx: WorkspaceContext = Depends(get_workspace_ctx),
     db: AsyncSession = Depends(get_db),
 ):
-    doc = await document_service.get_document(db, workspace_id=ctx.workspace.id, document_id=document_id)
+    doc = await document_service.get_document(
+        db, workspace_id=ctx.workspace.id, document_id=document_id
+    )
     return DocumentRead.model_validate(doc)
 
 
@@ -74,7 +77,9 @@ async def get_document_file(
     ctx: WorkspaceContext = Depends(get_workspace_ctx),
     db: AsyncSession = Depends(get_db),
 ):
-    doc = await document_service.get_document(db, workspace_id=ctx.workspace.id, document_id=document_id)
+    doc = await document_service.get_document(
+        db, workspace_id=ctx.workspace.id, document_id=document_id
+    )
     content = await storage_service.read_file(doc.storage_key)
     return Response(
         content=content,
@@ -89,10 +94,13 @@ async def get_document_events(
     ctx: WorkspaceContext = Depends(get_workspace_ctx),
 ):
     """SSE endpoint streaming document ingestion status until terminal state."""
+
     async def event_generator():
         while True:
             async with async_session_factory() as db:
-                doc = await document_service.get_document(db, workspace_id=ctx.workspace.id, document_id=document_id)
+                doc = await document_service.get_document(
+                    db, workspace_id=ctx.workspace.id, document_id=document_id
+                )
                 data = {
                     "status": doc.status,
                     "chunks_done": doc.chunks_done,
@@ -113,7 +121,9 @@ async def reingest_document(
     ctx: WorkspaceContext = Depends(get_workspace_ctx),
     db: AsyncSession = Depends(get_db),
 ):
-    doc = await document_service.reingest_document(db, workspace_id=ctx.workspace.id, document_id=document_id)
+    doc = await document_service.reingest_document(
+        db, workspace_id=ctx.workspace.id, document_id=document_id
+    )
     await enqueue_document_ingestion(doc.id)
     return DocumentRead.model_validate(doc)
 
@@ -124,4 +134,6 @@ async def delete_document(
     ctx: WorkspaceContext = Depends(get_workspace_ctx),
     db: AsyncSession = Depends(get_db),
 ):
-    await document_service.delete_document(db, workspace_id=ctx.workspace.id, document_id=document_id)
+    await document_service.delete_document(
+        db, workspace_id=ctx.workspace.id, document_id=document_id
+    )

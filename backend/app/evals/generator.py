@@ -1,6 +1,7 @@
 import random
 import uuid
 from typing import List, Optional
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -89,7 +90,10 @@ class QuestionGenerator:
             decoys = [
                 ("What was the company's net profit margin in the fiscal year 1874?", "N/A"),
                 ("What is the personal phone number of the author mentioned on page 99?", "N/A"),
-                ("What are the specific terms of the secret non-disclosure agreement regarding project Neptune?", "N/A"),
+                (
+                    "What are the specific terms of the secret non-disclosure agreement regarding project Neptune?",
+                    "N/A",
+                ),
             ]
             for dec_q, dec_a in decoys:
                 eq = EvalQuestion(

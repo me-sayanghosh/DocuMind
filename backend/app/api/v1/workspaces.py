@@ -1,4 +1,5 @@
 from typing import List
+
 from fastapi import APIRouter, BackgroundTasks, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -52,7 +53,9 @@ async def rename_workspace(
     ctx: WorkspaceContext = Depends(require_workspace_owner),
     db: AsyncSession = Depends(get_db),
 ):
-    ws = await workspace_service.rename_workspace(db, workspace_id=ctx.workspace.id, new_name=data.name)
+    ws = await workspace_service.rename_workspace(
+        db, workspace_id=ctx.workspace.id, new_name=data.name
+    )
     return WorkspaceRead(
         id=ws.id,
         name=ws.name,

@@ -1,6 +1,7 @@
 import asyncio
 import re
 from typing import AsyncIterator, Dict, List, Optional, Protocol
+
 from app.core.config import settings
 
 
@@ -10,21 +11,20 @@ class LLM(Protocol):
         system: str,
         messages: List[Dict[str, str]],
         model: Optional[str] = None,
-    ) -> AsyncIterator[str]:
-        ...
+    ) -> AsyncIterator[str]: ...
 
     async def complete(
         self,
         system: str,
         messages: List[Dict[str, str]],
         model: Optional[str] = None,
-    ) -> str:
-        ...
+    ) -> str: ...
 
 
 class AnthropicLLM:
     def __init__(self, api_key: str, default_model: str):
         import anthropic
+
         self.client = anthropic.AsyncAnthropic(api_key=api_key)
         self.default_model = default_model
 
@@ -66,6 +66,7 @@ class GeminiLLM:
 
     def __init__(self, api_key: str, default_model: str):
         from google import genai
+
         self.client = genai.Client(api_key=api_key)
         self.default_model = default_model
 

@@ -1,13 +1,14 @@
 import asyncio
-from datetime import datetime, timezone
 import json
 import uuid
+from datetime import datetime, timezone
 from typing import List
+
+import structlog
 from fastapi import APIRouter, Depends, Query, Response, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
-import structlog
 
 from app.core.deps import WorkspaceContext, get_workspace_ctx
 from app.core.errors import NotFoundException
@@ -49,7 +50,9 @@ async def create_eval_run(
             async with async_session_factory() as run_db:
                 await eval_runner.execute_run(run_db, run.id)
         except Exception as e:
-            await logger.aerror("Evaluation run failed unexpectedly", run_id=str(run.id), error=str(e))
+            await logger.aerror(
+                "Evaluation run failed unexpectedly", run_id=str(run.id), error=str(e)
+            )
 
     task = asyncio.create_task(run_async())
     eval_background_tasks.add(task)
@@ -118,19 +121,21 @@ async def get_eval_run_detail(
 
     result_items = []
     for r, q_text, answerable in res_rows.all():
-        result_items.append({
-            "id": str(r.id),
-            "question": q_text,
-            "mode": r.mode,
-            "answerable": answerable,
-            "hit_at_k": r.hit_at_k,
-            "rr": r.rr,
-            "answer": r.answer,
-            "faithfulness": r.faithfulness,
-            "citation_accuracy": r.citation_accuracy,
-            "refused": r.refused,
-            "latency_ms": r.latency_ms,
-        })
+        result_items.append(
+            {
+                "id": str(r.id),
+                "question": q_text,
+                "mode": r.mode,
+                "answerable": answerable,
+                "hit_at_k": r.hit_at_k,
+                "rr": r.rr,
+                "answer": r.answer,
+                "faithfulness": r.faithfulness,
+                "citation_accuracy": r.citation_accuracy,
+                "refused": r.refused,
+                "latency_ms": r.latency_ms,
+            }
+        )
 
     return EvalRunDetail(
         run=EvalRunRead.model_validate(run),

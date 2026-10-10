@@ -1,7 +1,8 @@
 import uuid
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
-from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String, Text, JSON
+
+from sqlalchemy import JSON, Boolean, DateTime, Float, ForeignKey, Integer, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -84,7 +85,9 @@ class EvalResult(Base):
         nullable=False,
         index=True,
     )
-    mode: Mapped[str] = mapped_column(String(50), nullable=False)  # 'vector', 'fts', 'hybrid', 'hybrid_rerank'
+    mode: Mapped[str] = mapped_column(
+        String(50), nullable=False
+    )  # 'vector', 'fts', 'hybrid', 'hybrid_rerank'
     retrieved_chunk_ids: Mapped[List[str]] = mapped_column(JSON, default=list, nullable=False)
     hit_at_k: Mapped[Dict[str, float]] = mapped_column(JSON, default=dict, nullable=False)
     rr: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)

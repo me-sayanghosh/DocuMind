@@ -1,9 +1,14 @@
 import re
 from dataclasses import dataclass, field
 from typing import Any, Dict, List
+
 import fitz  # PyMuPDF
 
-from app.core.errors import IngestionException, PayloadTooLargeException, UnsupportedMediaTypeException
+from app.core.errors import (
+    IngestionException,
+    PayloadTooLargeException,
+    UnsupportedMediaTypeException,
+)
 
 
 @dataclass
@@ -53,7 +58,9 @@ def validate_pdf_bytes(pdf_bytes: bytes, max_mb: int = 25) -> None:
 
     # 2. Magic bytes check
     if not pdf_bytes.startswith(b"%PDF-"):
-        raise UnsupportedMediaTypeException("Invalid file format. File does not start with %PDF- magic bytes.")
+        raise UnsupportedMediaTypeException(
+            "Invalid file format. File does not start with %PDF- magic bytes."
+        )
 
 
 def normalize_text(text: str) -> str:
@@ -79,7 +86,9 @@ def parse_pdf(pdf_bytes: bytes, max_pages: int = 300) -> ParsedDocument:
 
     page_count = len(doc)
     if page_count > max_pages:
-        raise IngestionException(f"PDF has {page_count} pages, exceeding the limit of {max_pages} pages")
+        raise IngestionException(
+            f"PDF has {page_count} pages, exceeding the limit of {max_pages} pages"
+        )
 
     pages: List[ParsedPage] = []
     warnings: List[str] = []
@@ -98,7 +107,8 @@ def parse_pdf(pdf_bytes: bytes, max_pages: int = 300) -> ParsedDocument:
 
     # Text that appears on > 70% of pages is considered running header/footer
     repeated_boilerplate = {
-        text for text, count in header_footer_candidates.items()
+        text
+        for text, count in header_footer_candidates.items()
         if page_count > 3 and (count / page_count) > 0.7
     }
 
@@ -138,13 +148,17 @@ def parse_pdf(pdf_bytes: bytes, max_pages: int = 300) -> ParsedDocument:
         has_low_text = len(full_page_text) < 20
 
         if has_low_text:
-            warnings.append(f"Page {page_num} has little or no extractable text (possible scan/image).")
+            warnings.append(
+                f"Page {page_num} has little or no extractable text (possible scan/image)."
+            )
 
-        pages.append(ParsedPage(
-            page_number=page_num,
-            text=full_page_text,
-            blocks=page_blocks,
-            has_low_text=has_low_text,
-        ))
+        pages.append(
+            ParsedPage(
+                page_number=page_num,
+                text=full_page_text,
+                blocks=page_blocks,
+                has_low_text=has_low_text,
+            )
+        )
 
     return ParsedDocument(page_count=page_count, pages=pages, warnings=warnings)

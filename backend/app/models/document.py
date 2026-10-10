@@ -1,7 +1,17 @@
 import uuid
 from datetime import datetime, timezone
 from typing import Optional
-from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Index, Integer, String, Text, UniqueConstraint
+
+from sqlalchemy import (
+    CheckConstraint,
+    DateTime,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+)
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -55,7 +65,9 @@ class Document(Base):
     __table_args__ = (
         UniqueConstraint("workspace_id", "sha256", name="documents_ws_hash"),
         Index("documents_ws_status", "workspace_id", "status"),
-        CheckConstraint("status IN ('queued', 'processing', 'ready', 'failed')", name="check_document_status"),
+        CheckConstraint(
+            "status IN ('queued', 'processing', 'ready', 'failed')", name="check_document_status"
+        ),
     )
 
     workspace = relationship("Workspace", back_populates="documents")

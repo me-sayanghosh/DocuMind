@@ -11,7 +11,9 @@ def test_estimate_tokens():
 def test_chunk_document_bounds_and_bboxes():
     blocks = [
         TextBlock(page=1, text="Introduction to the document.", bbox=BBox(1, 10, 20, 100, 40)),
-        TextBlock(page=1, text="Second paragraph explaining concepts.", bbox=BBox(1, 10, 50, 100, 70)),
+        TextBlock(
+            page=1, text="Second paragraph explaining concepts.", bbox=BBox(1, 10, 50, 100, 70)
+        ),
         TextBlock(page=2, text="Third section on page two.", bbox=BBox(2, 10, 20, 100, 40)),
     ]
     pages = [

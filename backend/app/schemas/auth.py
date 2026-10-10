@@ -1,12 +1,15 @@
 import uuid
 from datetime import datetime
 from typing import List
+
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
 class UserRegister(BaseModel):
     email: EmailStr
-    password: str = Field(..., min_length=10, description="Password must be at least 10 characters long")
+    password: str = Field(
+        ..., min_length=10, description="Password must be at least 10 characters long"
+    )
 
 
 class UserLogin(BaseModel):

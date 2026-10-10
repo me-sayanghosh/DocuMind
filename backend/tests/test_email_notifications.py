@@ -1,4 +1,5 @@
 from unittest.mock import MagicMock, patch
+
 import pytest
 from httpx import AsyncClient
 
@@ -23,13 +24,14 @@ async def test_email_service_fallback():
 async def test_email_service_smtp_mock():
     """Verify SMTP path formats and sends message when SMTP_HOST is configured."""
     mock_smtp_inst = MagicMock()
-    with patch("smtplib.SMTP", return_value=mock_smtp_inst), \
-         patch.object(settings, "SMTP_HOST", "smtp.test.com"), \
-         patch.object(settings, "SMTP_PORT", 587), \
-         patch.object(settings, "SMTP_USER", "user@test.com"), \
-         patch.object(settings, "SMTP_PASSWORD", "secret123"), \
-         patch.object(settings, "SMTP_USE_TLS", True):
-
+    with (
+        patch("smtplib.SMTP", return_value=mock_smtp_inst),
+        patch.object(settings, "SMTP_HOST", "smtp.test.com"),
+        patch.object(settings, "SMTP_PORT", 587),
+        patch.object(settings, "SMTP_USER", "user@test.com"),
+        patch.object(settings, "SMTP_PASSWORD", "secret123"),
+        patch.object(settings, "SMTP_USE_TLS", True),
+    ):
         res = await email_service.send_workspace_invitation(
             to_email="invited@example.com",
             workspace_name="Engineering",
@@ -60,7 +62,9 @@ async def test_invite_registered_user_api_flow(client: AsyncClient):
     )
     owner_token = login_owner.json()["access_token"]
 
-    me_resp = await client.get("/api/v1/auth/me", headers={"Authorization": f"Bearer {owner_token}"})
+    me_resp = await client.get(
+        "/api/v1/auth/me", headers={"Authorization": f"Bearer {owner_token}"}
+    )
     workspace_id = me_resp.json()["workspaces"][0]["id"]
 
     # 2. Register Colleague
@@ -71,7 +75,9 @@ async def test_invite_registered_user_api_flow(client: AsyncClient):
     assert reg_colleague.status_code == 201
 
     # 3. Owner invites Colleague
-    with patch.object(email_service, "send_workspace_invitation", return_value=True) as mock_invite_email:
+    with patch.object(
+        email_service, "send_workspace_invitation", return_value=True
+    ) as mock_invite_email:
         invite_resp = await client.post(
             f"/api/v1/workspaces/{workspace_id}/invites",
             json={"email": "colleague_reg@example.com", "role": "member"},
@@ -106,11 +112,15 @@ async def test_invite_unregistered_user_and_auto_claim_flow(client: AsyncClient)
     )
     owner_token = login_owner.json()["access_token"]
 
-    me_resp = await client.get("/api/v1/auth/me", headers={"Authorization": f"Bearer {owner_token}"})
+    me_resp = await client.get(
+        "/api/v1/auth/me", headers={"Authorization": f"Bearer {owner_token}"}
+    )
     workspace_id = me_resp.json()["workspaces"][0]["id"]
 
     # 2. Invite an unregistered email
-    with patch.object(email_service, "send_workspace_invitation", return_value=True) as mock_invite_email:
+    with patch.object(
+        email_service, "send_workspace_invitation", return_value=True
+    ) as mock_invite_email:
         invite_resp = await client.post(
             f"/api/v1/workspaces/{workspace_id}/invites",
             json={"email": "newbie@example.com", "role": "member"},
@@ -139,7 +149,9 @@ async def test_invite_unregistered_user_and_auto_claim_flow(client: AsyncClient)
     newbie_token = login_newbie.json()["access_token"]
 
     # 4. Verify Newbie automatically has the invited workspace in their workspace list
-    newbie_me = await client.get("/api/v1/auth/me", headers={"Authorization": f"Bearer {newbie_token}"})
+    newbie_me = await client.get(
+        "/api/v1/auth/me", headers={"Authorization": f"Bearer {newbie_token}"}
+    )
     assert newbie_me.status_code == 200
     newbie_workspaces = newbie_me.json()["workspaces"]
     workspace_ids = [w["id"] for w in newbie_workspaces]

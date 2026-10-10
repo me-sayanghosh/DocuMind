@@ -2,7 +2,8 @@ import math
 import uuid
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
-from sqlalchemy import text, select
+
+from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
@@ -90,7 +91,11 @@ class VectorRetriever:
                 )
         else:
             # Fallback for SQLite / test mode: load chunks in workspace and compute cosine sim
-            stmt = select(Chunk, Document.filename).join(Document, Chunk.document_id == Document.id).where(Chunk.workspace_id == workspace_id)
+            stmt = (
+                select(Chunk, Document.filename)
+                .join(Document, Chunk.document_id == Document.id)
+                .where(Chunk.workspace_id == workspace_id)
+            )
             if doc_ids:
                 stmt = stmt.where(Chunk.document_id.in_(doc_ids))
             result = await db.execute(stmt)
@@ -171,7 +176,11 @@ class FTSRetriever:
         else:
             # Fallback for SQLite / testing: keyword substring match score
             words = [w.lower() for w in query.split() if len(w) > 2]
-            stmt = select(Chunk, Document.filename).join(Document, Chunk.document_id == Document.id).where(Chunk.workspace_id == workspace_id)
+            stmt = (
+                select(Chunk, Document.filename)
+                .join(Document, Chunk.document_id == Document.id)
+                .where(Chunk.workspace_id == workspace_id)
+            )
             if doc_ids:
                 stmt = stmt.where(Chunk.document_id.in_(doc_ids))
             result = await db.execute(stmt)
@@ -204,7 +213,11 @@ class FTSRetriever:
 
 
 class HybridRetriever:
-    def __init__(self, vector_retriever: Optional[VectorRetriever] = None, fts_retriever: Optional[FTSRetriever] = None):
+    def __init__(
+        self,
+        vector_retriever: Optional[VectorRetriever] = None,
+        fts_retriever: Optional[FTSRetriever] = None,
+    ):
         self.vector_retriever = vector_retriever or VectorRetriever()
         self.fts_retriever = fts_retriever or FTSRetriever()
 

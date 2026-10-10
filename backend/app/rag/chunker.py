@@ -1,6 +1,7 @@
 import re
 from dataclasses import dataclass, field
 from typing import Any, Dict, List
+
 from app.rag.parser import ParsedDocument, TextBlock
 
 
@@ -59,14 +60,16 @@ def chunk_document(
                     page_end = max(b.page for b in current_blocks)
                     unique_bboxes = [b.bbox.to_dict() for b in current_blocks]
 
-                    chunks.append(DocumentChunk(
-                        chunk_index=chunk_idx,
-                        page_start=page_start,
-                        page_end=page_end,
-                        text=chunk_text,
-                        token_count=current_tokens,
-                        bboxes=unique_bboxes,
-                    ))
+                    chunks.append(
+                        DocumentChunk(
+                            chunk_index=chunk_idx,
+                            page_start=page_start,
+                            page_end=page_end,
+                            text=chunk_text,
+                            token_count=current_tokens,
+                            bboxes=unique_bboxes,
+                        )
+                    )
                     chunk_idx += 1
 
                     # Retain overlap
@@ -93,14 +96,16 @@ def chunk_document(
             page_end = max(b.page for b in current_blocks)
             unique_bboxes = [b.bbox.to_dict() for b in current_blocks]
 
-            chunks.append(DocumentChunk(
-                chunk_index=chunk_idx,
-                page_start=page_start,
-                page_end=page_end,
-                text=chunk_text,
-                token_count=current_tokens,
-                bboxes=unique_bboxes,
-            ))
+            chunks.append(
+                DocumentChunk(
+                    chunk_index=chunk_idx,
+                    page_start=page_start,
+                    page_end=page_end,
+                    text=chunk_text,
+                    token_count=current_tokens,
+                    bboxes=unique_bboxes,
+                )
+            )
             chunk_idx += 1
 
             # Retain overlap
@@ -127,13 +132,15 @@ def chunk_document(
         page_end = max(b.page for b in current_blocks)
         unique_bboxes = [b.bbox.to_dict() for b in current_blocks]
 
-        chunks.append(DocumentChunk(
-            chunk_index=chunk_idx,
-            page_start=page_start,
-            page_end=page_end,
-            text=chunk_text,
-            token_count=current_tokens,
-            bboxes=unique_bboxes,
-        ))
+        chunks.append(
+            DocumentChunk(
+                chunk_index=chunk_idx,
+                page_start=page_start,
+                page_end=page_end,
+                text=chunk_text,
+                token_count=current_tokens,
+                bboxes=unique_bboxes,
+            )
+        )
 
     return chunks

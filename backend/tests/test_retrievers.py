@@ -1,5 +1,7 @@
 import uuid
+
 import pytest
+
 from app.rag.retrievers import Candidate, HybridRetriever
 
 
@@ -10,9 +12,30 @@ async def test_rrf_scoring_logic():
     c3_id = uuid.uuid4()
     doc_id = uuid.uuid4()
 
-    c1 = Candidate(chunk_id=c1_id, document_id=doc_id, filename="doc.pdf", page=1, snippet="First text", score=0.9)
-    c2 = Candidate(chunk_id=c2_id, document_id=doc_id, filename="doc.pdf", page=2, snippet="Second text", score=0.8)
-    c3 = Candidate(chunk_id=c3_id, document_id=doc_id, filename="doc.pdf", page=3, snippet="Third text", score=0.7)
+    c1 = Candidate(
+        chunk_id=c1_id,
+        document_id=doc_id,
+        filename="doc.pdf",
+        page=1,
+        snippet="First text",
+        score=0.9,
+    )
+    c2 = Candidate(
+        chunk_id=c2_id,
+        document_id=doc_id,
+        filename="doc.pdf",
+        page=2,
+        snippet="Second text",
+        score=0.8,
+    )
+    c3 = Candidate(
+        chunk_id=c3_id,
+        document_id=doc_id,
+        filename="doc.pdf",
+        page=3,
+        snippet="Third text",
+        score=0.7,
+    )
 
     # Mock retrievers returning known rankings
     class MockVectorRetriever:

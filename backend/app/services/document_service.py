@@ -1,6 +1,7 @@
 import hashlib
 import uuid
 from typing import List, Tuple
+
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -63,9 +64,7 @@ class DocumentService:
 
         return doc, False
 
-    async def list_documents(
-        self, db: AsyncSession, workspace_id: uuid.UUID
-    ) -> List[Document]:
+    async def list_documents(self, db: AsyncSession, workspace_id: uuid.UUID) -> List[Document]:
         stmt = (
             select(Document)
             .where(Document.workspace_id == workspace_id)
@@ -108,9 +107,7 @@ class DocumentService:
         await db.refresh(doc)
         return doc
 
-    async def process_document_ingestion(
-        self, db: AsyncSession, document_id: uuid.UUID
-    ) -> None:
+    async def process_document_ingestion(self, db: AsyncSession, document_id: uuid.UUID) -> None:
         doc = await db.get(Document, document_id)
         if not doc:
             return

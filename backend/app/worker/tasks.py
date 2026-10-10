@@ -1,13 +1,13 @@
 import asyncio
 import uuid
 from typing import Any, Dict
+
 from arq import create_pool
 from arq.connections import RedisSettings
 
 from app.core.config import settings
 from app.db.session import async_session_factory
 from app.services.document_service import document_service
-
 
 background_tasks = set()
 
@@ -47,8 +47,11 @@ async def run_ingestion_direct(document_id: uuid.UUID) -> None:
             await document_service.process_document_ingestion(db, document_id)
     except Exception as e:
         import structlog
+
         logger = structlog.get_logger()
-        await logger.aerror("Failed direct document ingestion", document_id=str(document_id), error=str(e))
+        await logger.aerror(
+            "Failed direct document ingestion", document_id=str(document_id), error=str(e)
+        )
 
 
 async def ingest_document(ctx: Dict[str, Any], document_id_str: str) -> None:
@@ -59,6 +62,7 @@ async def ingest_document(ctx: Dict[str, Any], document_id_str: str) -> None:
 
 async def run_eval_job(ctx: Dict[str, Any], run_id_str: str) -> None:
     from app.evals.runner import eval_runner
+
     run_id = uuid.UUID(run_id_str)
     async with async_session_factory() as db:
         await eval_runner.execute_run(db, run_id)

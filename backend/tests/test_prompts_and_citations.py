@@ -1,7 +1,8 @@
+import uuid
+
 from app.rag.pipeline import parse_citation_ordinals
 from app.rag.prompts import build_sources_prompt, escape_source_text
 from app.rag.retrievers import Candidate
-import uuid
 
 
 def test_escape_source_tags():

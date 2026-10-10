@@ -1,7 +1,8 @@
-from datetime import datetime, timezone
 import time
 import uuid
+from datetime import datetime, timezone
 from typing import Dict, List
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -26,7 +27,9 @@ class EvalRunner:
         self.llm = get_llm()
 
     async def execute_run(self, db: AsyncSession, run_id: uuid.UUID) -> EvalRun:
-        run_stmt = select(EvalRun).where(EvalRun.id == run_id).options(selectinload(EvalRun.questions))
+        run_stmt = (
+            select(EvalRun).where(EvalRun.id == run_id).options(selectinload(EvalRun.questions))
+        )
         run_res = await db.execute(run_stmt)
         run = run_res.scalar_one_or_none()
         if not run:
@@ -88,13 +91,17 @@ class EvalRunner:
                         initial_cands = await self.hybrid_retriever.retrieve(
                             db=db, query=q.question, workspace_id=run.workspace_id, k=30
                         )
-                        cands = await self.reranker.rerank(query=q.question, cands=initial_cands, k=k_val)
+                        cands = await self.reranker.rerank(
+                            query=q.question, cands=initial_cands, k=k_val
+                        )
 
                     latency_ms = int((time.perf_counter() - t0) * 1000)
                     latencies.append(latency_ms)
 
                     retrieved_ids = [str(c.chunk_id) for c in cands]
-                    hit_dict = calculate_hit_at_k(q.gold_chunk_ids, retrieved_ids, k_values=[1, 3, 5, 10])
+                    hit_dict = calculate_hit_at_k(
+                        q.gold_chunk_ids, retrieved_ids, k_values=[1, 3, 5, 10]
+                    )
                     rr = calculate_mrr(q.gold_chunk_ids, retrieved_ids)
 
                     hit5_list.append(hit_dict.get("hit@5", 0.0))

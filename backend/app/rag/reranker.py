@@ -3,13 +3,13 @@ from __future__ import annotations
 import asyncio
 import re
 from typing import List, Protocol
+
 from app.core.config import settings
 from app.rag.retrievers import Candidate
 
 
 class Reranker(Protocol):
-    async def rerank(self, query: str, cands: List[Candidate], k: int = 6) -> List[Candidate]:
-        ...
+    async def rerank(self, query: str, cands: List[Candidate], k: int = 6) -> List[Candidate]: ...
 
 
 class HeuristicReranker:
@@ -57,6 +57,7 @@ class CrossEncoderReranker:
     def _get_model(self):
         if self._model is None:
             from sentence_transformers import CrossEncoder
+
             self._model = CrossEncoder(self.model_name)
         return self._model
 

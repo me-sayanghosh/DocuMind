@@ -1,5 +1,6 @@
 import html
 from typing import List
+
 from app.rag.retrievers import Candidate
 
 SYSTEM_PROMPT = """You are DocChat, an accurate, verifiable document assistant.

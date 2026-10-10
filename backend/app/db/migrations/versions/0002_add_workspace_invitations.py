@@ -5,9 +5,11 @@ Revises: 0001_initial_schema
 Create Date: 2026-10-08 00:00:00.000000
 
 """
+
 from typing import Sequence, Union
-from alembic import op
+
 import sqlalchemy as sa
+from alembic import op
 from sqlalchemy.dialects import postgresql
 
 revision: str = "0002_add_workspace_invitations"
@@ -28,7 +30,9 @@ def upgrade() -> None:
         ),
         sa.Column("email", sa.String(255), nullable=False, index=True),
         sa.Column("role", sa.String(50), nullable=False, server_default="member"),
-        sa.Column("created_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()),
+        sa.Column(
+            "created_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()
+        ),
     )
 
 

@@ -1,4 +1,5 @@
 from typing import Dict, List
+
 from fastapi import APIRouter, Depends
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -62,7 +63,9 @@ async def get_system_metrics(
         "fts": get_percentiles([float(t.fts_ms) for t in traces if t.fts_ms > 0]),
         "fuse": get_percentiles([float(t.fuse_ms) for t in traces if t.fuse_ms > 0]),
         "rerank": get_percentiles([float(t.rerank_ms) for t in traces if t.rerank_ms > 0]),
-        "first_token": get_percentiles([float(t.first_token_ms) for t in traces if t.first_token_ms > 0]),
+        "first_token": get_percentiles(
+            [float(t.first_token_ms) for t in traces if t.first_token_ms > 0]
+        ),
         "total": get_percentiles([float(t.total_ms) for t in traces if t.total_ms > 0]),
     }
 

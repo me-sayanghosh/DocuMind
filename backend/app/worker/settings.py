@@ -1,4 +1,5 @@
 from arq.connections import RedisSettings
+
 from app.core.config import settings
 from app.worker.tasks import ingest_document, run_eval_job
 

@@ -109,10 +109,14 @@ class EmailService:
             try:
                 msg = self._build_mime_message(to_email, subject, html_content, text_content)
                 await asyncio.to_thread(self._send_via_smtp_sync, msg)
-                logger.info("email_sent_via_smtp", host=settings.SMTP_HOST, to=to_email, subject=subject)
+                logger.info(
+                    "email_sent_via_smtp", host=settings.SMTP_HOST, to=to_email, subject=subject
+                )
                 return True
             except Exception as exc:
-                logger.error("smtp_send_failed", host=settings.SMTP_HOST, to=to_email, error=str(exc))
+                logger.error(
+                    "smtp_send_failed", host=settings.SMTP_HOST, to=to_email, error=str(exc)
+                )
                 return False
 
         # 3. Development / Local Fallback (Logs email details so workflow succeeds)
@@ -133,8 +137,12 @@ class EmailService:
         is_registered: bool = True,
     ) -> bool:
         """Send a workspace invitation email notification."""
-        subject = f"You've been invited to join \"{workspace_name}\" on DocuMind"
-        action_url = f"{settings.FRONTEND_URL}/login" if is_registered else f"{settings.FRONTEND_URL}/register"
+        subject = f'You\'ve been invited to join "{workspace_name}" on DocuMind'
+        action_url = (
+            f"{settings.FRONTEND_URL}/login"
+            if is_registered
+            else f"{settings.FRONTEND_URL}/register"
+        )
 
         status_text = (
             "Log in with this email to access the workspace from your workspace switcher."
