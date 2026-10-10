@@ -1,0 +1,21 @@
+# Caddy reverse proxy for DocuMind
+# Automatically provisions and renews Let's Encrypt SSL certificates for your domain.
+
+{$DOMAIN:localhost} {
+    encode gzip zstd
+
+    # Proxy all traffic to the Nginx frontend container (which in turn serves static assets and proxies /api to FastAPI)
+    reverse_proxy web:80 {
+        # Preserve client headers
+        header_up Host {host}
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto {scheme}
+
+        # Enable unbuffered streaming for SSE tokens
+        transport http {
+            read_buffer 0
+            response_header_timeout 600s
+        }
+    }
+}

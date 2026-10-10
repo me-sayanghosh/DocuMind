@@ -6,8 +6,8 @@
 |---|---|---|
 | local | Development | Docker Compose (db, redis, api, worker, web) |
 | ci | Automated tests | GitHub Actions services |
-| staging (optional) | Pre-release checks | Same as prod, smaller |
-| production | Public demo | Railway or Render (details below) |
+| staging | Pre-release checks | Docker Compose or cloud sandbox |
+| production | Live website | Docker Compose on VPS (DigitalOcean, Hetzner, AWS EC2) or PaaS (Railway/Render) |
 
 ## 2. Containers
 
@@ -52,14 +52,36 @@ volumes: { pgdata: {}, uploads: {} }
 
 `.env.example` documents all; production values live in the platform secret store.
 
-## 4. Production topology (Railway/Render)
+## 4. Production Topology
 
+### 4.1 VPS / Dedicated Cloud VM (Recommended)
+An all-in-one, highly cost-effective setup that runs all services on a single server (DigitalOcean Droplet, Hetzner Cloud, AWS EC2, Linode with 2–4 vCPU, 4–8 GB RAM).
+
+- **Architecture:** `db` (pgvector 16), `redis` (Redis 7), `api` (FastAPI), `worker` (ARQ), `web` (Nginx), and optional `caddy` (automatic HTTPS Let's Encrypt certificates).
+- **Storage:** Persistent Docker volumes `uploads` and `pgdata`.
+- **Quick Deploy:**
+  ```bash
+  # 1. Setup production environment
+  cp .env.production.example .env
+  # Configure GEMINI_API_KEY, JWT_SECRET, and POSTGRES_PASSWORD
+
+  # 2. Deploy the stack
+  make prod-up
+  # Or run automated verification & deploy script:
+  ./scripts/deploy.sh
+  ```
+- **Automatic HTTPS with Caddy:**
+  ```bash
+  DOMAIN=yourdomain.com docker compose -f docker-compose.prod.yml --profile ssl up -d
+  ```
+
+### 4.2 PaaS (Railway / Render)
 - **Services:** web (static), api (web service), worker (background worker), Postgres (managed, pgvector enabled), Redis (managed).
-- **Storage:** managed object storage (S3-compatible: Cloudflare R2, Backblaze B2, or AWS S3). Local disk is ephemeral on these platforms — do not store PDFs there in prod.
-- **Resources:** api 512 MB–1 GB; worker 1–2 GB (embedding model + PyMuPDF). If RAM is tight, switch to a smaller embedding model or hosted embeddings behind the `Embedder` interface.
-- **Run migrations** as a release/pre-deploy command: `alembic upgrade head`.
+- **Storage:** managed object storage (S3-compatible: Cloudflare R2, Backblaze B2, or AWS S3).
+- **Resources:** api 512 MB–1 GB; worker 1–2 GB.
+- **Run migrations** as a pre-deploy release command: `alembic upgrade head`.
 - **Domain/TLS:** managed certificates; API on `api.<domain>`, web on apex or `app.<domain>`.
-- Enable pgvector: `CREATE EXTENSION vector;` (managed Postgres must support it — verify the provider offers it before choosing).
+- Enable pgvector: `CREATE EXTENSION vector;`.
 
 ## 5. CI/CD (GitHub Actions)
 

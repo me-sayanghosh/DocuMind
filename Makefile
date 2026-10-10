@@ -1,9 +1,13 @@
-.PHONY: up down api worker web test test-backend test-frontend eval migrate lint format clean quality help
+.PHONY: up down api worker web test test-backend test-frontend eval migrate lint format clean quality help prod-build prod-up prod-down prod-logs
 
 help:
 	@echo "Available commands:"
 	@echo "  make up            - Start Postgres and Redis via Docker Compose"
 	@echo "  make down          - Stop Docker Compose services"
+	@echo "  make prod-build    - Build production Docker containers"
+	@echo "  make prod-up       - Start production stack with Docker Compose"
+	@echo "  make prod-down     - Stop production stack"
+	@echo "  make prod-logs     - View production stack logs"
 	@echo "  make api           - Start FastAPI backend with reload"
 	@echo "  make worker        - Start ARQ background worker"
 	@echo "  make web           - Start Vite frontend dev server"
@@ -21,6 +25,18 @@ up:
 
 down:
 	docker compose down
+
+prod-build:
+	docker compose -f docker-compose.prod.yml build
+
+prod-up:
+	docker compose -f docker-compose.prod.yml up -d
+
+prod-down:
+	docker compose -f docker-compose.prod.yml down
+
+prod-logs:
+	docker compose -f docker-compose.prod.yml logs -f
 
 api:
 	cd backend && uvicorn app.main:app --reload --host 0.0.0.0 --port 8000

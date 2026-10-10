@@ -85,6 +85,16 @@ def create_app() -> FastAPI:
     # Routers
     app.include_router(api_v1_router)
 
+    # Top-level health check probes for cloud load balancers & orchestrators
+    @app.get("/healthz", tags=["system"], include_in_schema=False)
+    async def root_healthz():
+        return {"status": "ok"}
+
+    @app.get("/readyz", tags=["system"], include_in_schema=False)
+    async def root_readyz():
+        from app.api.v1.system import readyz
+        return await readyz()
+
     return app
 
 
