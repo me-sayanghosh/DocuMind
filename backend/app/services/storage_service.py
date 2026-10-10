@@ -1,7 +1,10 @@
+import contextlib
 import os
 import uuid
-import aiofiles
 from typing import Optional
+
+import aiofiles
+
 from app.core.config import settings
 
 
@@ -37,10 +40,8 @@ class StorageService:
     async def delete_file(self, storage_key: str) -> None:
         full_path = self._get_path(storage_key)
         if os.path.exists(full_path):
-            try:
+            with contextlib.suppress(OSError):
                 os.remove(full_path)
-            except OSError:
-                pass
 
 
 storage_service = StorageService()

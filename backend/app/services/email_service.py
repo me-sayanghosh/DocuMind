@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -107,7 +108,7 @@ class EmailService:
         if settings.SMTP_HOST:
             try:
                 msg = self._build_mime_message(to_email, subject, html_content, text_content)
-                await asyncio.to_thread(self._send_via_smtp_sync, to_email, msg)
+                await asyncio.to_thread(self._send_via_smtp_sync, msg)
                 logger.info("email_sent_via_smtp", host=settings.SMTP_HOST, to=to_email, subject=subject)
                 return True
             except Exception as exc:

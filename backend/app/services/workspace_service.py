@@ -92,27 +92,27 @@ class WorkspaceService:
             await db.commit()
             await db.refresh(member)
             return member, None, True
-        else:
-            # User is not registered yet: create or update a pending workspace invitation
-            inv_stmt = select(WorkspaceInvitation).where(
-                WorkspaceInvitation.workspace_id == workspace_id,
-                WorkspaceInvitation.email == clean_email,
-            )
-            inv_res = await db.execute(inv_stmt)
-            invitation = inv_res.scalar_one_or_none()
-            if not invitation:
-                invitation = WorkspaceInvitation(
-                    workspace_id=workspace_id,
-                    email=clean_email,
-                    role=role,
-                )
-                db.add(invitation)
-            else:
-                invitation.role = role
 
-            await db.commit()
-            await db.refresh(invitation)
-            return None, invitation, False
+        # User is not registered yet: create or update a pending workspace invitation
+        inv_stmt = select(WorkspaceInvitation).where(
+            WorkspaceInvitation.workspace_id == workspace_id,
+            WorkspaceInvitation.email == clean_email,
+        )
+        inv_res = await db.execute(inv_stmt)
+        invitation = inv_res.scalar_one_or_none()
+        if not invitation:
+            invitation = WorkspaceInvitation(
+                workspace_id=workspace_id,
+                email=clean_email,
+                role=role,
+            )
+            db.add(invitation)
+        else:
+            invitation.role = role
+
+        await db.commit()
+        await db.refresh(invitation)
+        return None, invitation, False
 
 
 workspace_service = WorkspaceService()

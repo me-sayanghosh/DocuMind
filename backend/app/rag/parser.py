@@ -111,7 +111,7 @@ def parse_pdf(pdf_bytes: bytes, max_pages: int = 300) -> ParsedDocument:
         page_text_pieces: List[str] = []
 
         for b in blocks_raw:
-            # b: (x0, y0, x1, y1, text, block_no, block_type)
+            # PyMuPDF block tuple format: (x0, y0, x1, y1, text, block_no, block_type)
             if len(b) >= 5 and b[4]:
                 block_text = b[4].strip()
                 if not block_text:

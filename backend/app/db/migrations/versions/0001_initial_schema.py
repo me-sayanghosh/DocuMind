@@ -1,7 +1,7 @@
 """Initial schema with vector, full-text, and multi-tenancy tables
 
 Revision ID: 0001_initial_schema
-Revises: 
+Revises:
 Create Date: 2026-10-06 00:00:00.000000
 
 """
