@@ -7,7 +7,9 @@ from fastapi import APIRouter, Depends, File, UploadFile, status
 from fastapi.responses import Response, StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.config import settings
 from app.core.deps import WorkspaceContext, get_workspace_ctx
+from app.core.errors import PayloadTooLargeException
 from app.db.session import async_session_factory, get_db
 from app.schemas.document import DocumentRead, DocumentUploadResponse
 from app.services.document_service import document_service
@@ -24,7 +26,20 @@ async def upload_document(
     db: AsyncSession = Depends(get_db),
     response: Response = None,
 ):
-    content = await file.read()
+    max_bytes = settings.MAX_UPLOAD_MB * 1024 * 1024
+    chunks = []
+    total_bytes = 0
+    while True:
+        chunk = await file.read(min(1024 * 1024, max_bytes - total_bytes + 1))
+        if not chunk:
+            break
+        total_bytes += len(chunk)
+        if total_bytes > max_bytes:
+            raise PayloadTooLargeException(
+                f"PDF exceeds maximum allowed size of {settings.MAX_UPLOAD_MB} MB"
+            )
+        chunks.append(chunk)
+    content = b"".join(chunks)
     filename = file.filename or "uploaded.pdf"
 
     doc, is_duplicate = await document_service.upload_document(

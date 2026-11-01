@@ -78,10 +78,44 @@ An all-in-one, highly cost-effective setup that runs all services on a single se
 ### 4.2 PaaS (Railway / Render)
 - **Services:** web (static), api (web service), worker (background worker), Postgres (managed, pgvector enabled), Redis (managed).
 - **Storage:** managed object storage (S3-compatible: Cloudflare R2, Backblaze B2, or AWS S3).
+- Configure `STORAGE_BACKEND=s3` and the `S3_*` variables for PaaS deployments; local
+  filesystem storage is not shared between separately scaled API and worker services.
 - **Resources:** api 512 MB–1 GB; worker 1–2 GB.
 - **Run migrations** as a pre-deploy release command: `alembic upgrade head`.
 - **Domain/TLS:** managed certificates; API on `api.<domain>`, web on apex or `app.<domain>`.
 - Enable pgvector: `CREATE EXTENSION vector;`.
+
+### 4.3 Vercel frontend + Render backend
+
+This repository supports deploying the Vite frontend to Vercel while keeping the
+FastAPI API and ARQ worker on Render. The frontend keeps using same-origin
+`/api/...` requests; `frontend/vercel.json` proxies them to the Render API.
+
+Before deploying the frontend, replace `docchat-api.onrender.com` in
+`frontend/vercel.json` with the exact public URL of the Render web service.
+Using a custom API domain is recommended when available.
+
+1. Create a Render Blueprint from `deploy/render.yaml`.
+2. Set the required secrets on both the `docchat-api` web service and
+   `docchat-worker`: `JWT_SECRET`, `GEMINI_API_KEY`, and all `S3_*` values.
+3. Configure the web service:
+   - `CORS_ORIGINS=https://your-frontend.vercel.app`
+   - `FRONTEND_URL=https://your-frontend.vercel.app`
+   - `STORAGE_BACKEND=s3`
+   - `DATABASE_URL` and `REDIS_URL` are supplied by the Blueprint.
+4. Create a Cloudflare R2 (or other S3-compatible) bucket. Configure its
+   bucket name, endpoint, access key, secret key, and region in Render.
+   Do not use local filesystem storage on Render because it is ephemeral and
+   is not shared between the API and worker.
+5. In Vercel, import the repository and set the project root to `frontend`.
+   Use the defaults:
+   - Build command: `npm run build`
+   - Output directory: `dist`
+   - Install command: `npm ci`
+6. Deploy Vercel, then update Render's `CORS_ORIGINS` and `FRONTEND_URL` with
+   the final Vercel or custom frontend domain.
+7. Verify `/healthz`, registration/login, PDF upload, ingestion, and streamed
+   chat responses. The Render worker must be running for ingestion to finish.
 
 ## 5. CI/CD (GitHub Actions)
 

@@ -1,7 +1,7 @@
 import os
 from typing import Any, List, Union
 
-from pydantic import field_validator
+from pydantic import field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -105,6 +105,11 @@ class Settings(BaseSettings):
     UPLOAD_DIR: str = "/tmp/docchat/uploads"
     MAX_UPLOAD_MB: int = 25
     MAX_PAGES: int = 300
+    S3_ENDPOINT_URL: str = ""
+    S3_BUCKET: str = ""
+    S3_ACCESS_KEY_ID: str = ""
+    S3_SECRET_ACCESS_KEY: str = ""
+    S3_REGION: str = "us-east-1"
 
     # Abuse controls
     RATE_LIMIT_PER_MINUTE: int = 30
@@ -123,6 +128,31 @@ class Settings(BaseSettings):
     SMTP_FROM_NAME: str = "DocuMind"
     RESEND_API_KEY: str = ""
     FRONTEND_URL: str = "http://localhost:5173"
+
+    @model_validator(mode="after")
+    def validate_production_settings(self) -> "Settings":
+        if self.ENVIRONMENT.lower() == "production":
+            if self.JWT_SECRET == "insecure-dev-jwt-secret-please-change-to-32-bytes-in-production":
+                raise ValueError("JWT_SECRET must be explicitly configured in production")
+            if len(self.JWT_SECRET.encode("utf-8")) < 32:
+                raise ValueError("JWT_SECRET must be at least 32 bytes in production")
+            if not self.CORS_ORIGINS:
+                raise ValueError("CORS_ORIGINS must contain at least one origin in production")
+            if self.STORAGE_BACKEND.lower() == "s3":
+                missing = [
+                    name
+                    for name, value in (
+                        ("S3_BUCKET", self.S3_BUCKET),
+                        ("S3_ACCESS_KEY_ID", self.S3_ACCESS_KEY_ID),
+                        ("S3_SECRET_ACCESS_KEY", self.S3_SECRET_ACCESS_KEY),
+                    )
+                    if not value
+                ]
+                if missing:
+                    raise ValueError(
+                        f"S3 storage requires configuration for: {', '.join(missing)}"
+                    )
+        return self
 
 
 settings = Settings()

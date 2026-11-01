@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Optional, Tuple
 
@@ -97,6 +98,7 @@ class AuthService:
         refresh_entry = RefreshToken(
             user_id=user.id,
             token_hash=token_hash,
+            family_id=uuid.uuid4(),
             expires_at=expires_at,
             user_agent=user_agent[:500] if user_agent else None,
         )
@@ -122,41 +124,17 @@ class AuthService:
 
         now = datetime.now(timezone.utc)
 
-        # REUSE DETECTION WITH GRACE PERIOD (RFC 6819 Section 5.2.2.3)
-        # If token was already revoked, check if it was revoked within a grace period (30s)
-        # to tolerate concurrent requests (React StrictMode double-mount, multi-tab, network retry)
         if token_record.revoked_at is not None:
-            grace_seconds = 30
-            revoked_time = token_record.revoked_at
-            if revoked_time.tzinfo is None:
-                revoked_time = revoked_time.replace(tzinfo=timezone.utc)
-            if (now - revoked_time).total_seconds() > grace_seconds:
-                # Outside grace period: real reuse attack!
-                await db.execute(
-                    update(RefreshToken)
-                    .where(RefreshToken.user_id == token_record.user_id)
-                    .values(revoked_at=now)
-                )
-                await db.commit()
-                raise UnauthorizedException(
-                    "Compromised session detected. All sessions revoked. Please log in again."
-                )
-
-            # Inside grace period: issue a new valid pair
-            new_access_token = create_access_token(subject=str(token_record.user_id))
-            new_raw_refresh = generate_refresh_token()
-            new_token_hash = hash_refresh_token(new_raw_refresh)
-            new_expires_at = now + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
-
-            new_record = RefreshToken(
-                user_id=token_record.user_id,
-                token_hash=new_token_hash,
-                expires_at=new_expires_at,
-                user_agent=user_agent[:500] if user_agent else None,
+            await db.execute(
+                update(RefreshToken)
+                .where(RefreshToken.family_id == token_record.family_id)
+                .where(RefreshToken.revoked_at.is_(None))
+                .values(revoked_at=now)
             )
-            db.add(new_record)
             await db.commit()
-            return new_access_token, new_raw_refresh
+            raise UnauthorizedException(
+                "Compromised session detected. All sessions revoked. Please log in again."
+            )
 
         if token_record.expires_at < now:
             raise UnauthorizedException("Refresh token has expired")
@@ -173,6 +151,7 @@ class AuthService:
         new_record = RefreshToken(
             user_id=token_record.user_id,
             token_hash=new_token_hash,
+            family_id=token_record.family_id,
             expires_at=new_expires_at,
             user_agent=user_agent[:500] if user_agent else None,
         )

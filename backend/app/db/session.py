@@ -1,5 +1,5 @@
 import contextlib
-from typing import AsyncGenerator
+from typing import Any, AsyncGenerator, Dict
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -8,7 +8,7 @@ from app.core.config import settings
 
 is_sqlite = settings.DATABASE_URL.startswith("sqlite")
 
-engine_kwargs = {"echo": False}
+engine_kwargs: Dict[str, Any] = {"echo": False}
 if not is_sqlite:
     engine_kwargs.update(
         {
@@ -45,3 +45,9 @@ async def set_db_user_context(session: AsyncSession, user_id: str) -> None:
                 text("SET LOCAL app.user_id = :user_id"),
                 {"user_id": str(user_id)},
             )
+
+
+async def set_db_worker_context(session: AsyncSession) -> None:
+    """Allow the trusted ingestion worker to access queued tenant records."""
+    if not is_sqlite:
+        await session.execute(text("SET app.worker_mode = 'true'"))

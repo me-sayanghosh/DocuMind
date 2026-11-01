@@ -17,6 +17,30 @@ services:
           type: redis
           name: docchat-redis
           property: connectionString
+      - key: ENVIRONMENT
+        value: production
+      - key: JWT_SECRET
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: LLM_PROVIDER
+        value: gemini
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: STORAGE_BACKEND
+        value: s3
+      - key: S3_BUCKET
+        sync: false
+      - key: S3_ENDPOINT_URL
+        sync: false
+      - key: S3_ACCESS_KEY_ID
+        sync: false
+      - key: S3_SECRET_ACCESS_KEY
+        sync: false
+      - key: S3_REGION
+        value: us-east-1
 
   - type: worker
     name: docchat-worker
@@ -33,6 +57,31 @@ services:
           type: redis
           name: docchat-redis
           property: connectionString
+      - key: ENVIRONMENT
+        value: production
+      - key: JWT_SECRET
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: LLM_PROVIDER
+        value: gemini
+      - key: STORAGE_BACKEND
+        value: s3
+      - key: S3_BUCKET
+        sync: false
+      - key: S3_ENDPOINT_URL
+        sync: false
+      - key: S3_ACCESS_KEY_ID
+        sync: false
+      - key: S3_SECRET_ACCESS_KEY
+        sync: false
+      - key: S3_REGION
+        value: us-east-1
+
+  - type: redis
+    name: docchat-redis
+    plan: starter
+    maxmemoryPolicy: noeviction
 
 databases:
   - name: docchat-pg

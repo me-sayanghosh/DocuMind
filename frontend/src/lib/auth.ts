@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 import { User, Workspace } from "../types/api";
 
 export interface AuthState {
@@ -32,9 +31,7 @@ export function isTokenExpired(token: string | null): boolean {
   }
 }
 
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set) => ({
+export const useAuthStore = create<AuthState>()((set) => ({
       accessToken: null,
       user: null,
       workspaces: [],
@@ -60,9 +57,6 @@ export const useAuthStore = create<AuthState>()(
         })),
       setUser: (user) => set({ user }),
       logout: () => {
-        try {
-          localStorage.removeItem("docmind_auth");
-        } catch {}
         set({
           accessToken: null,
           user: null,
@@ -72,15 +66,5 @@ export const useAuthStore = create<AuthState>()(
         });
       },
       setLoading: (loading) => set({ isLoading: loading }),
-    }),
-    {
-      name: "docmind_auth",
-      partialize: (state) => ({
-        accessToken: state.accessToken,
-        user: state.user,
-        workspaces: state.workspaces,
-        currentWorkspace: state.currentWorkspace,
-      }),
     }
-  )
-);
+));

@@ -18,6 +18,7 @@ from app.schemas.auth import (
     WorkspaceSummary,
 )
 from app.services.auth_service import auth_service
+from app.services.quota_service import quota_service
 from app.services.workspace_service import workspace_service
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -33,15 +34,19 @@ def set_refresh_cookie(response: Response, raw_token: str) -> None:
         httponly=True,
         secure=settings.ENVIRONMENT == "production",
         samesite="lax",
-        path="/",
+        path="/api/v1/auth",
     )
 
 
 @router.post("/register", response_model=UserRead, status_code=status.HTTP_201_CREATED)
 async def register(
     data: UserRegister,
+    request: Request,
     db: AsyncSession = Depends(get_db),
 ):
+    await quota_service.check_auth_rate_limit(
+        request.client.host if request.client else "unknown", "register"
+    )
     user = await auth_service.register(db, email=data.email, password=data.password)
     return user
 
@@ -53,6 +58,10 @@ async def login(
     response: Response,
     db: AsyncSession = Depends(get_db),
 ):
+    await quota_service.check_auth_rate_limit(
+        f"{request.client.host if request.client else 'unknown'}:{data.email.strip().lower()}",
+        "login",
+    )
     user_agent = request.headers.get("user-agent")
     access_token, raw_refresh, user = await auth_service.login(
         db, email=data.email, password=data.password, user_agent=user_agent
@@ -74,6 +83,8 @@ async def refresh(
     x_requested_with: Optional[str] = Header(None),
     db: AsyncSession = Depends(get_db),
 ):
+    if x_requested_with != "XMLHttpRequest":
+        raise UnauthorizedException("Refresh request header missing")
     if not refresh_token:
         raise UnauthorizedException("Refresh token cookie missing")
 
@@ -97,6 +108,7 @@ async def logout(
 ):
     if refresh_token:
         await auth_service.logout(db, raw_refresh_token=refresh_token)
+    response.delete_cookie(key="refresh_token", path="/api/v1/auth")
     response.delete_cookie(key="refresh_token", path="/")
 
 

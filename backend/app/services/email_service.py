@@ -1,5 +1,6 @@
 import asyncio
 import contextlib
+import html
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -37,6 +38,7 @@ class EmailService:
         msg: MIMEMultipart,
     ) -> None:
         """Synchronous SMTP delivery executed in threadpool."""
+        server: smtplib.SMTP | smtplib.SMTP_SSL
         if settings.SMTP_USE_SSL:
             server = smtplib.SMTP_SSL(settings.SMTP_HOST, settings.SMTP_PORT, timeout=15)
         else:
@@ -137,12 +139,17 @@ class EmailService:
         is_registered: bool = True,
     ) -> bool:
         """Send a workspace invitation email notification."""
+        safe_workspace_name = html.escape(workspace_name)
+        safe_inviter_email = html.escape(inviter_email)
+        safe_role = html.escape(role)
         subject = f'You\'ve been invited to join "{workspace_name}" on DocuMind'
+        safe_subject = html.escape(subject)
         action_url = (
             f"{settings.FRONTEND_URL}/login"
             if is_registered
             else f"{settings.FRONTEND_URL}/register"
         )
+        safe_action_url = html.escape(action_url, quote=True)
 
         status_text = (
             "Log in with this email to access the workspace from your workspace switcher."
@@ -157,7 +164,7 @@ class EmailService:
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{subject}</title>
+  <title>{safe_subject}</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: #f4f4f5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f4f4f5; padding: 40px 15px;">
@@ -185,7 +192,7 @@ class EmailService:
                 You've been invited to collaborate
               </h1>
               <p style="margin: 0 0 24px 0; font-size: 15px; color: #52525b; line-height: 1.6;">
-                <strong>{inviter_email}</strong> has invited you to join the <strong>{workspace_name}</strong> workspace as a <strong>{role}</strong>.
+                <strong>{safe_inviter_email}</strong> has invited you to join the <strong>{safe_workspace_name}</strong> workspace as a <strong>{safe_role}</strong>.
               </p>
 
               <!-- Workspace Card -->
@@ -193,8 +200,8 @@ class EmailService:
                 <tr>
                   <td style="padding: 16px 20px;">
                     <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: #64748b; letter-spacing: 0.5px; margin-bottom: 4px;">Workspace</div>
-                    <div style="font-size: 16px; font-weight: 700; color: #0f172a;">{workspace_name}</div>
-                    <div style="font-size: 13px; color: #64748b; margin-top: 4px;">Role: <span style="font-weight: 600; color: #334155;">{role}</span></div>
+                    <div style="font-size: 16px; font-weight: 700; color: #0f172a;">{safe_workspace_name}</div>
+                    <div style="font-size: 13px; color: #64748b; margin-top: 4px;">Role: <span style="font-weight: 600; color: #334155;">{safe_role}</span></div>
                   </td>
                 </tr>
               </table>
@@ -203,7 +210,7 @@ class EmailService:
               <table role="presentation" cellspacing="0" cellpadding="0" style="margin-bottom: 24px;">
                 <tr>
                   <td align="center" style="border-radius: 8px; background-color: #000000;">
-                    <a href="{action_url}" target="_blank" style="display: inline-block; padding: 12px 28px; font-size: 14px; font-weight: 600; color: #ffffff; text-decoration: none; border-radius: 8px;">
+                    <a href="{safe_action_url}" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 12px 28px; font-size: 14px; font-weight: 600; color: #ffffff; text-decoration: none; border-radius: 8px;">
                       {button_label} &rarr;
                     </a>
                   </td>

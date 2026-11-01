@@ -6,7 +6,7 @@ from arq import create_pool
 from arq.connections import RedisSettings
 
 from app.core.config import settings
-from app.db.session import async_session_factory
+from app.db.session import async_session_factory, set_db_worker_context
 from app.services.document_service import document_service
 
 background_tasks = set()
@@ -44,6 +44,7 @@ async def enqueue_document_ingestion(document_id: uuid.UUID) -> None:
 async def run_ingestion_direct(document_id: uuid.UUID) -> None:
     try:
         async with async_session_factory() as db:
+            await set_db_worker_context(db)
             await document_service.process_document_ingestion(db, document_id)
     except Exception as e:
         import structlog
@@ -57,6 +58,7 @@ async def run_ingestion_direct(document_id: uuid.UUID) -> None:
 async def ingest_document(ctx: Dict[str, Any], document_id_str: str) -> None:
     document_id = uuid.UUID(document_id_str)
     async with async_session_factory() as db:
+        await set_db_worker_context(db)
         await document_service.process_document_ingestion(db, document_id)
 
 
@@ -65,4 +67,5 @@ async def run_eval_job(ctx: Dict[str, Any], run_id_str: str) -> None:
 
     run_id = uuid.UUID(run_id_str)
     async with async_session_factory() as db:
+        await set_db_worker_context(db)
         await eval_runner.execute_run(db, run_id)

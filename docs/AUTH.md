@@ -13,7 +13,7 @@ Authenticate users, authorize every request to a workspace, and make cross-tenan
 | Token | Format | Lifetime | Storage |
 |---|---|---|---|
 | Access | JWT (HS256, or RS256/EdDSA if multi-service), claims `sub`, `iat`, `exp`, `jti` | 15 min | In memory on the client (not localStorage) |
-| Refresh | Opaque random 256-bit, **hash stored in DB** | 14 days, rotated on every use | `httpOnly; Secure; SameSite=Lax; Path=/api/v1/auth` cookie |
+| Refresh | Opaque random 256-bit, **hash and family stored in DB** | 14 days, rotated on every use | `httpOnly; Secure; SameSite=Lax; Path=/api/v1/auth` cookie |
 
 - Refresh rotation with reuse detection: if a revoked token is presented, revoke the whole token family and force re-login.
 - Logout revokes the refresh token; access tokens expire quickly.
