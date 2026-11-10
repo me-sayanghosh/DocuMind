@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🧠 DocuMind
+# DocuMind
 
 ### Production-Grade Multi-Tenant Document Intelligence & RAG System
 **Hybrid Retrieval (Dense + Lexical) · Cross-Encoder Reranking · Page-Level Verifiable Citations · Built-in Evaluation Harness**
